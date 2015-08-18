@@ -1,0 +1,23 @@
+Package: abcrf
+Type: Package
+Title: Approximate Bayesian Computation via Random Forests
+Version: 0.9-4
+Date: 2015-08-18
+Authors@R: c(person("Jean-Michel Marin", role="aut",
+                    email="jean-michel.marin@umontpellier.fr"),
+             person("Pierre Pudlo",  role=c("aut", "cre"),
+                     email="pierre.pudlo@umontpellier.fr"),
+             person("Christian P. Robert", role="ctb"))
+Description: Performs Approximate Bayesian Computation (ABC) model choice via random forests.
+License: GPL (>= 2)
+LazyData: TRUE
+Depends: R(>= 2.10.0)
+Imports: MASS, randomForest
+Packaged: 2015-08-18 04:52:25 UTC; ppudlo
+NeedsCompilation: no
+Author: Jean-Michel Marin [aut],
+  Pierre Pudlo [aut, cre],
+  Christian P. Robert [ctb]
+Maintainer: Pierre Pudlo <pierre.pudlo@umontpellier.fr>
+Repository: CRAN
+Date/Publication: 2015-08-18 08:34:04

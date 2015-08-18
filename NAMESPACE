@@ -1,0 +1,21 @@
+import(MASS, randomForest)
+importFrom("grDevices", "rainbow")
+importFrom("graphics", "legend", "lines", "par", "plot")
+importFrom("stats", "density", "model.frame", "model.response",
+            "predict", "reformulate", "terms")
+export(abcrf)
+S3method(abcrf, formula)
+S3method(abcrf, factor)
+S3method(abcrf, default)
+S3method(plot, abcrf)
+S3method(print, abcrf)
+S3method(predict, abcrf)
+S3method(plot, abcrf)
+
+S3method(summary, abcrfpredict)
+S3method(print, abcrfpredict)
+S3method(as.matrix, abcrfpredict)
+S3method(as.data.frame, abcrfpredict)
+S3method(as.list, abcrfpredict)
+
+#exportPattern("^[[:alpha:]]+")
