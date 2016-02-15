@@ -25,7 +25,7 @@ abcrf.factor <- function(modindex, sumsta, lda=TRUE, ntree=500, sampsize=min(1e5
     registerDoParallel(cl)
     if (trunc(ntree/ncores)==ntree/ncores) ntrees <- rep(ntree/ncores, ncores) else
       ntrees <- c(rep(trunc(ntree/ncores), ncores),ntree-trunc(ntree/ncores)*ncores)
-    model.rf <- foreach(ntree=ntrees, .combine= combine, .multicombine=TRUE, .packages='randomForest') %dopar% {
+    model.rf <- foreach(ntree=ntrees, .combine= combine, .multicombine=TRUE, .packages='randomForest') %dorng% {
         randomForest(sumsta, modindex, ntree=ntree, sampsize=sampsize, norm.votes=FALSE, keep.inbag=TRUE, ...)
       }
     stopCluster(cl)

@@ -1,6 +1,7 @@
 import(MASS)
 import(randomForest)
 importFrom(parallel, "detectCores", "makeCluster", "stopCluster")
+importFrom(doRNG, "%dorng%")
 importFrom(foreach, "foreach", "%dopar%")
 importFrom(doParallel, "registerDoParallel")
 importFrom(grDevices, "rainbow", "dev.off")

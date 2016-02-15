@@ -23,7 +23,7 @@ predict.abcrf <- function(object, obs, ntree=1000, sampsize=min(1e5, dim(sumsta)
     registerDoParallel(cl)
     if (trunc(ntree/ncores)==ntree/ncores) ntrees <- rep(ntree/ncores, ncores) else
       ntrees <- c(rep(trunc(ntree/ncores), ncores),ntree-trunc(ntree/ncores)*ncores)
-    error.rf <- foreach(ntree=ntrees, .combine= combine, .multicombine=TRUE, .packages='randomForest') %dopar% {
+    error.rf <- foreach(ntree=ntrees, .combine= combine, .multicombine=TRUE, .packages='randomForest') %dorng% {
         randomForest(sumsta, local.error, ntree=ntree, sampsize=sampsize, ...)
       }
     stopCluster(cl)

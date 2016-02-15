@@ -1,9 +1,9 @@
-405256cd8fa1eee62137fcb947cafb24 *DESCRIPTION
-ca902a773b9fd5be889d440c0dc2aa48 *NAMESPACE
-c99e1b07217bf0b26adac25f9f6bbea4 *R/abcrf.R
+9c255c39eadf41891a3359433e86fef1 *DESCRIPTION
+66266f20a1db18c7eb2841958c0fb341 *NAMESPACE
+5951cc2b0980ea52fcc262f366b975e0 *R/abcrf.R
 4e0a1cb056396ff5f0b073a4db5227da *R/err.abcrf.R
 e243a8d1225f7c3a6caa1de425a2e48b *R/plot.abcrf.R
-50f7f6e8726fb02c58e576b395b5384b *R/predict.abcrf.R
+de679731c1c240364be0a76168bedafb *R/predict.abcrf.R
 596a26fdd9d39e7fdc291045fe66b6c6 *data/datalist
 7ebfd42590a3ceea169a49e5612d1f8a *data/snp.RData
 f4c81d8a956a523bebf42d99c396cfd6 *data/snp.obs.RData
