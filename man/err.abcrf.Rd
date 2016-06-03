@@ -1,8 +1,8 @@
 \name{err.abcrf}
 \alias{err.abcrf}
-\title{Calculate and plot, for different number of trees, the out-of-bag errors associated with an ABC-RF object}
+\title{Calculate and plot for different numbers of tree, the out-of-bag errors associated with an ABC-RF object}
 \description{
-\code{err.abcrf} returns some out-of-bag errors and plot them.
+\code{err.abcrf} returns out-of-bag errors and plot them.
 }
 \usage{
 err.abcrf(x)
@@ -14,20 +14,19 @@ err.abcrf(x)
 \item{}{a matrix with 2 colunms: the number of trees and the out-of-bag errors}
 }
 \references{
-Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. & Robert, 
-C. P. (2015). 
-\emph{Reliable ABC model choice via random forests}. Bioinformatics.
-\url{http://bioinformatics.oxfordjournals.org/content/early/2015/12/23/bioinformatics.btv684}
+Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert, C.P. (2016)
+\emph{Reliable ABC model choice via random forests} Bioinformatics
+\url{http://bioinformatics.oxfordjournals.org/content/32/6/859}
 }
 \seealso{
-\code{\link{abcrf}}, 
+\code{\link{abcrf}},
 \code{\link{predict.abcrf}},
 \code{\link{plot.abcrf}}
 }
 \examples{
 data(snp)
-modindex <- snp[1:500, 1]
-sumsta <- snp[1:500, -1]
+modindex <- snp$modindex[1:500]
+sumsta <- snp$sumsta[1:500,]
 model.rf <- abcrf(modindex, sumsta, ntree=100)
 err.rf <- err.abcrf(model.rf)
 }

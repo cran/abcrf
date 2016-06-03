@@ -47,13 +47,13 @@ print.abcrfpredict <- function(x, ...) {
 
 as.matrix.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  colnames(ret) <- c("model", "post.proba")
+  colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   ret
 }
 
 as.data.frame.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  colnames(ret) <- c("model", "post.proba")
+  colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   as.data.frame(ret,  row.names=NULL, optional=FALSE, ...)
 }
 
