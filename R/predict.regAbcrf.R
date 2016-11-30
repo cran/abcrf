@@ -1,50 +1,67 @@
-predict.regAbcrf <-
-function(object, newdata, quantiles=c(0.025,0.975) , ...){
-
-  train.data <- object$sumsta
-  obj <- object$model.rf
-  inbag <- obj$inbag
-  x <- newdata
-
-  class(obj) <- c("quantregForest", "randomForest")
-  obj[["origNodes"]] <- predict(object$model.rf, train.data, predict.all=TRUE)$individual
-  obj[["origObs"]] <- object$model.rf$y
-  obj[["importance"]] <- object$model.rf$importance[,-1]
-  obj[["quantiles"]] <- NULL
-
+predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
+                             paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1, ...)
+{
   ### Checking arguments
-  if (!inherits(object, "regAbcrf"))
-    stop("object not of class regAbcrf")
+  
+  if (!inherits(obs, "data.frame"))
+    stop("obs needs to be a data.frame object")
+  if (!inherits(training, "data.frame"))
+    stop("training needs to be a data.frame object")
+  if (nrow(training) == 0L || is.null(nrow(training)))
+    stop("no simulation in the training reference table (response, sumstat)")
+  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+    stop("paral should be TRUE or FALSE")
+  if( ncores > detectCores() || ncores < 1 )
+    stop("incorrect number of CPU cores")
   if(min(quantiles)<0 | max(quantiles)>1 )
     stop("quantiles must be in [0,1]")
+  
+  # modindex and sumsta recovery
+  
+  mf <- match.call(expand.dots=FALSE)
+  mf <- mf[1]
+  mf$formula <- object$formula
+  mf$data <- training
+  mf[[1L]] <- as.name("model.frame")
+  mf <- eval(mf, parent.frame() )
+  mt <- attr(mf, "terms")
 
-  x <- newdata
+  obj <- object$model.rf
+  inbag <- matrix(unlist(obj$inbag.counts, use.names=FALSE), ncol=obj$num.trees, byrow=FALSE)
+
+  obj[["origNodes"]] <- predict(object$model.rf, training, predict.all=TRUE, num.threads=ncores)$predictions
+  obj[["origObs"]] <- model.response(mf)
+
+  x <- obs
   if(!is.null(x)){
     if(is.vector(x)){
       x <- matrix(x,ncol=1)
     }
     if (nrow(x) == 0)
-      stop("newdata has 0 rows")
+      stop("obs has 0 rows")
     if (any(is.na(x)))
-      stop("missing values in newdata")
+      stop("missing values in obs")
   }
 
   ### prediction
 
   origObs <- obj$origObs
   origNodes <- obj$origNodes
-
-  quant <- matrix(nrow=nrow(x),ncol=length(quantiles))
-  mediane <- matrix(nrow=nrow(x), ncol=1)
-  nodes <- predict(object$model.rf, x, predict.all=TRUE)$individual
-  ntree <- obj$ntree
-
-  nobs <- length(origObs)
+  
   nnew <- nrow(x)
-  normalise <- 1
+  
+  quant <- matrix(nrow=nnew,ncol=length(quantiles))
+  mediane <- matrix(nrow=nnew, ncol=1)
+
+  nodes <- predict(object$model.rf, x, predict.all=TRUE, num.threads=ncores)$predictions
+  if(is.null(dim(nodes))) nodes <- matrix(nodes, nrow=1)
+  ntree <- obj$num.trees
+
+  nobs <- object$model.rf$num.samples
   weightvec <- rep(0,nobs*nnew)
   counti <- rep(0,nobs)
-  thres <- 5*.Machine$double.eps
+  thres <- 5*.Machine$double.eps # basiquement, 0
+  
   result <- .C("findweightsAmelioree",
                as.double(as.vector(origNodes)),
                as.integer(as.vector(inbag)),
@@ -55,26 +72,24 @@ function(object, newdata, quantiles=c(0.025,0.975) , ...){
                as.integer(ntree),
                as.double(thres),
                as.integer(counti),
-               as.integer(normalise),
                PACKAGE="abcrf")
 
   weights <- matrix(result$weightvec,nrow= nobs)
-  weights.std <- sapply(1:nrow(x),function(x) weights[,x]/sum(weights[,x])) # weights std
-
-  # esper <- sapply(1:nrow(x), function(x) weights.std[,x]%*%origObs)
-  esperRf <- predict(object$model.rf, newdata=x, ...)
+  weights.std <- weights/ntree
+  
+  esper <- sapply(1:nnew, function(x) weights.std[,x]%*%origObs)
 
   # Out of bag expectations
 
-  predict.oob <- predict(object$model.rf)
+  predict.oob <- object$model.rf$predictions
 
   # squared residuals
 
   residus.oob.sq <- (origObs - predict.oob)^2
 
   # variance estimation
-
-  variance <- sapply(1:nrow(x), function(x) weights.std[,x] %*% residus.oob.sq)
+  
+  variance <- sapply(1:nnew, function(x) weights.std[,x] %*% residus.oob.sq)
 
   # Quantiles calculation
 
@@ -83,8 +98,8 @@ function(object, newdata, quantiles=c(0.025,0.975) , ...){
   weights <- weights[ord,,drop=FALSE]
   cumweights <- apply(weights,2,cumsum)
   cumweights <- sweep(cumweights,2,as.numeric(cumweights[nobs,]),FUN="/")
-
-  # quantiles (code Meins)
+  
+  # quantiles (from Meins)
 
   for (qc in 1:length(quantiles)){
     larg <- cumweights<quantiles[qc]
@@ -122,7 +137,7 @@ function(object, newdata, quantiles=c(0.025,0.975) , ...){
   factor[!indz] <- (0.5-weightmin[!indz])/(weightmax[!indz]-weightmin[!indz])
   mediane[indn1,1] <- quantmin + factor* (quantmax-quantmin)
 
-  tmp <- list(expectation = esperRf, med = mediane, variance = variance, quantiles = quant)
+  tmp <- list(expectation = esper, med = mediane, variance = variance, quantiles = quant)
   class(tmp) <- "regAbcrfpredict"
   tmp
 

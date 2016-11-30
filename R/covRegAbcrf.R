@@ -1,71 +1,99 @@
 covRegAbcrf.regAbcrf <-
-function(regForest1, regForest2, newdata, ntree=500, sampsize=min(1e5, nrow(regForest1$sumsta)), paral=FALSE, ... ){
+function(regForest1, regForest2, obs, training1, training2, ntree=500, mtry=max(floor((dim(training1)[2]-1)/3), 1), sampsize=min(1e5, dim(training1)[1]), 
+         paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1,
+         paral.predict = FALSE, ncores.predict = if(paral.predict) max(detectCores()-1,1) else 1, ... ){
   
+  if (!inherits(obs, "data.frame")) 
+    stop("obs needs to be a data.frame object")
   if (!inherits(regForest1, "regAbcrf")) 
     stop("regForest1 not of class regAbcrf")
   if (!inherits(regForest2, "regAbcrf")) 
     stop("regForest2 not of class regAbcrf")
-
-  if(any(dim(regForest1$sumsta) != dim(regForest2$sumsta) ))
-    stop("regForest1 and regForest2 training data are not constructed on the same summaries")
-  if(any(regForest1$sumsta != regForest2$sumsta) )
-    stop("regForest1 and regForest2 training data are not constructed on the same summaries")
+  if (!inherits(training1, "data.frame"))
+    stop("training1 needs to be a data.frame object")
+  if (!inherits(training2, "data.frame"))
+    stop("training2 needs to be a data.frame object")
+  if(any(regForest1$model.rf$forest$independent.variable.names != regForest1$model.rf$forest$independent.variable.names) )
+    stop("variable names of the regAbcrf objects do not match")
   
-  train.data <- regForest1$sumsta
-  object1 <- regForest1$model.rf
-  object2 <- regForest2$model.rf
-  x <- newdata
+  if(regForest1$formula != regForest1$formula )
+    stop("regForest1 and regForest2 formulas do not match")
+
+  if(sampsize > nrow(training1) )
+    stop("sampsize too large")
+  
+  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+    stop("paral should be TRUE or FALSE")
+  if ( (!is.logical(paral.predict)) && (length(paral.predict) != 1L) )
+    stop("paral.predict should be TRUE or FALSE")
+  if( (ncores > detectCores() || ncores < 1) || (ncores.predict > detectCores() || ncores.predict < 1) )
+    stop("incorrect number of CPU cores")
+  
+  x <- obs
   
   if(!is.null(x)){
     if(is.vector(x)){
       x <- matrix(x,ncol=1)
     }
     if (nrow(x) == 0) 
-      stop("newdata has 0 rows")
+      stop("obs has 0 rows")
     if (any(is.na(x))) 
-      stop("missing values in newdata")
+      stop("missing values in obs")
   }
   
   if(!is.null(x)){
-    vname <- if (is.null(dim(object2$importance))) {
-      names(object2$importance)
-    } else {
-      rownames(object2$importance)
-    }
-    
-    if (any(colnames(x) != vname))
+    if (any(colnames(x) != regForest1$model.rf$forest$independent.variable.names))
       stop("names of predictor variables do not match")
   }
+  
+  # recover response
+  
+  mf1 <- match.call(expand.dots=FALSE)
+  mf1 <- mf1[1]
+  mf1$formula <- regForest1$formula
+  mf1$data <- training1
+  mf1[[1L]] <- as.name("model.frame")
+  mf1 <- eval(mf1, parent.frame() )
+  mt1 <- attr(mf1, "terms")
+  resp1 <- model.response(mf1)
+  
+  sumsta1 <- training1[regForest1$model.rf$forest$independent.variable.names]
+  
+  mf2 <- match.call(expand.dots=FALSE)
+  mf2 <- mf2[1]
+  mf2$formula <- regForest2$formula
+  mf2$data <- training2
+  mf2[[1L]] <- as.name("model.frame")
+  mf2 <- eval(mf2, parent.frame() )
+  mt2 <- attr(mf2, "terms")
+  resp2 <- model.response(mf2)
+  
+  sumsta2 <- training2[regForest2$model.rf$forest$independent.variable.names]
+   
+  if(any(dim(sumsta1) != dim(sumsta2) ))
+    stop("regForest1 and regForest2 training data are not build on the same summaries")
+  if(any(sumsta1 != sumsta2) )
+    stop("regForest1 and regForest2 training data are not build on the same summaries")
   
   
   # residuals
   
-  res1 <- regForest1$model.rf$y - predict(regForest1$model.rf)
-  res2 <- regForest2$model.rf$y - predict(regForest2$model.rf)
+  res1 <- resp1 - regForest1$model.rf$predictions
+  res2 <- resp2 - regForest2$model.rf$predictions
   
-  res12 <- res1*res2 # new response varible
+  res12 <- res1*res2 # new response variable
+  
+  # construction du dataframe pour ranger
+  data.ranger <- data.frame(res12, sumsta1)
   
   # forest construction
+
+  m <- names(match.call(expand.dots=TRUE))
   
-  if (paral==TRUE) {
-    ncores <- max(detectCores()-1,1) 
-    cl <- makeCluster(ncores)
-    registerDoParallel(cl)
-    if (trunc(ntree/ncores)==ntree/ncores) ntrees <- rep(ntree/ncores, ncores) else
-      ntrees <- c(rep(trunc(ntree/ncores), ncores),ntree-trunc(ntree/ncores)*ncores)
-    model.rf <- foreach(ntree=ntrees, .combine= combine, .multicombine=TRUE, .packages='randomForest') %dorng% {
-      randomForest(regForest1$sumsta, res12, ntree=ntree, sampsize=sampsize, keep.inbag=TRUE, ...)
-    }
-    stopCluster(cl)
-    pred.noob <- predict(model.rf, newdata=regForest1$sumsta, predict.all=TRUE)
-    mat <- pred.noob$individual
-    for( j in 1:model.rf$ntree ){
-      mat[model.rf$inbag[,j]!=0,j] <- NA
-    }
-    model.rf$predicted <- sapply(1:nrow(regForest1$sumsta), function(x) mean(mat[x,!is.na(mat[x,])]) )
-  } else model.rf <- randomForest(regForest1$sumsta, res12, ntree=ntree, sampsize=sampsize, keep.inbag = TRUE, ...)
+  model.rf <- ranger(res12~., data=data.ranger, num.trees = ntree, sample.fraction=sampsize/length(res12),
+                           num.threads = ncores, mtry=mtry, ...)
   
-  result <- predict(model.rf, newdata=x)
+  result <- predict(model.rf, x, num.threads=ncores.predict)$predictions
   
   return(result)
   

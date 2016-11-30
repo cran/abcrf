@@ -17,7 +17,7 @@ data(snp.obs)
 \code{snp} is a list containing an ABC reference table of 15,000
 simulations from a Bayesian prior predictive model (see Pudlo et al., 2016, for a description of the model choice issue). The first element, named \code{modindex} is a \code{factor} containing the model indices, the second element, \code{param}, is a data frame with seven simulated parameters. The last element of this list, named \code{sumsta}, contains the reference table on which to perform ABC model choice and parameter estimation.
 
-\code{snp.obs} is a list of one element named \code{sumsta}: a data frame with the summary statistics of two pseudo-observed data sets.
+\code{snp.obs} is a data frame containing the summary statistics of two pseudo-observed data sets.
 }
 \source{
 Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert, C.P. (2016)

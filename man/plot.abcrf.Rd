@@ -2,7 +2,7 @@
 \alias{plot.abcrf}
 \title{Plot of an ABC-RF object}
 \usage{
-\method{plot}{abcrf}(x, obs=NULL, n.var=20, main="", pdf=FALSE,...)
+\method{plot}{abcrf}(x, training, obs=NULL, n.var=20, pdf=FALSE, ...)
 }
 \description{
 \code{plot.abcrf} provides both a variable importance plot of a model choice ABC-RF object
@@ -10,12 +10,12 @@ and the projection of the reference table on the LDA axes.
 }
 \arguments{
 \item{x}{an \code{abcrf} object.}
+\item{training}{the data frame containing the reference table used to train the \code{\link{abcrf}} object.}
 \item{obs}{a vector containing the summary statistics of an observed dataset that
 will be added to the graph of the projected reference table (black star or vertical line).}
 \item{n.var}{number of variables in the variable importance representation.}
-\item{main}{title of the  variable importance plot.}
 \item{pdf}{a boolean that indicates if a pdf version of the graph(s) should be saved in the current directory.}
-\item{...}{additional arguments to be passed on to \code{\link{varImpPlot}}.}
+\item{...}{not used.}
 }
 \note{
 The graph of the reference table projected
@@ -32,14 +32,15 @@ Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert, C.P
 \code{\link{abcrf}},
 \code{\link{predict.abcrf}},
 \code{\link{err.abcrf}},
-\code{\link{varImpPlot}}
+\code{\link{variableImpPlot}}
 }
 \examples{
 data(snp)
 modindex <- snp$modindex[1:500]
 sumsta <- snp$sumsta[1:500,]
-model.rf <- abcrf(modindex, sumsta, ntree=100)
-plot(model.rf)
+data1 <- data.frame(modindex, sumsta)
+model.rf <- abcrf(modindex~., data1, ntree=100)
+plot(model.rf, data1)
 data(snp.obs)
-plot(model.rf, snp.obs$sumsta[1,])
+plot(model.rf, data1, obs=snp.obs[1,])
 }

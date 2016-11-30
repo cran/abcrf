@@ -1,43 +1,62 @@
 densityPlot.regAbcrf <- 
-function(object, newdata, main="Posterior density", ...){
-    
-    train.data <- object$sumsta
-    obj <- object$model.rf
-    inbag <- obj$inbag
-    x <- newdata
-    
-    class(obj) <- c("quantregForest", "randomForest")
-    obj[["origNodes"]] <- predict(object$model.rf, train.data, predict.all=TRUE)$individual
-    obj[["origObs"]] <- object$model.rf$y
-    obj[["importance"]] <- object$model.rf$importance[,-1]
-    obj[["quantiles"]] <- NULL 
-    
+function(object, obs, training,  main="Posterior density", paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1, ...)
+{
     ### Checking arguments
     if (!inherits(object, "regAbcrf")) 
       stop("object not of class regAbcrf")
+  
+    if (!inherits(training, "data.frame"))
+      stop("training needs to be a data.frame object")
+  
+    if (!inherits(obs, "data.frame")) 
+      stop("obs needs to be a data.frame object")
+    if (nrow(obs) == 0L || is.null(nrow(obs)))
+      stop("no data in obs")
+    if (nrow(training) == 0L || is.null(nrow(training)))
+      stop("no simulation in the training reference table (response, sumstat)")
+    if ( (!is.logical(paral)) && (length(paral) != 1L) )
+      stop("paral should be TRUE or FALSE")
+    if( ncores > detectCores() || ncores < 1 )
+      stop("incorrect number of CPU cores")
     
-    x <- newdata
+    x <- obs
     if(!is.null(x)){
       if(is.vector(x)){
         x <- matrix(x,ncol=1)
       }
       if (nrow(x) == 0) 
-        stop("newdata has 0 rows")
+        stop("obs has 0 rows")
       if (any(is.na(x))) 
-        stop("missing values in newdata")
-    }
+        stop("missing values in obs")
+    }  
+
+    # resp and sumsta recover
+  
+    mf <- match.call(expand.dots=FALSE)
+    mf <- mf[1]
+    mf$formula <- object$formula
+    mf$data <- training
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame() )
+    mt <- attr(mf, "terms")
+    resp <- model.response(mf)
+    
+    obj <- object$model.rf
+    inbag <- matrix(unlist(obj$inbag.counts, use.names=FALSE), ncol=obj$num.trees, byrow=FALSE)
+    
+    obj[["origNodes"]] <- predict(obj, training, predict.all=TRUE, num.threads=ncores)$predictions
+    obj[["origObs"]] <- model.response(mf)
     
     #####################
     
     origObs <- obj$origObs
     origNodes <- obj$origNodes
     
-    nodes <- predict(object$model.rf, x, predict.all=TRUE)$individual
-    ntree <- obj$ntree
-    
-    nobs <- length(origObs)
+    nodes <- predict(obj, x, predict.all=TRUE, num.threads=ncores )$predictions
+    ntree <- obj$num.trees
+    nobs <- object$model.rf$num.samples
     nnew <- nrow(x)
-    normalise <- 1
+    
     weightvec <- rep(0,nobs*nnew)
     counti <- rep(0,nobs)
     thres <- 5*.Machine$double.eps
@@ -51,14 +70,15 @@ function(object, newdata, main="Posterior density", ...){
                  as.integer(ntree),
                  as.double(thres),
                  as.integer(counti),
-                 as.integer(normalise),
                  PACKAGE="abcrf")
     
-    weights <- matrix(result$weightvec,nrow= nobs)
-    weights.std <- sapply(1:nrow(x),function(x) weights[,x]/sum(weights[,x])) # weights std
+    weights <- matrix(result$weightvec, nrow= nobs)
+    weights.std <- weights/ntree
     
-    plot(density(obj$y, weights=weights.std, ...), main=main )
-    
+    for(i in 1:nnew){
+      plot(density(resp, weights=weights.std[,i], ...), main=main )
+      if(nnew>1 && i<nnew) readline("Press <ENTER> to Continue")
+    }
 }
 
 densityPlot <-

@@ -1,6 +1,5 @@
-plot.regAbcrf <-
-function(x, n.var=min(30, nrow(x$model.rf$importance)), ... ){
+plot.regAbcrf <- function(x, n.var=min(30, length(x$model.rf$variable.importance)), ...){
   if (!inherits(x, "regAbcrf")) 
     stop("First argument not of class regAbcrf")
-  varImpPlot(x$model.rf, n.var=n.var, ...)
+  variableImpPlot(x, n.var=n.var)
 }
