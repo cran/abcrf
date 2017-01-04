@@ -124,5 +124,5 @@ readRefTable=function(filename = "reftable.bin", header = "header.txt")
             stats[i,j] = lstats[j]
         }
     }
-    list(nrec = nrec, nscen = nscen, nrecscen = nrecscen, nparam = nparam, scenarios = scenarios, params = params, stats = stats)
+    list(nrec = nrec, nscen = nscen, nrecscen = nrecscen, nparam = nparam, scenarios = as.factor(scenarios), params = params, stats = stats)
 }

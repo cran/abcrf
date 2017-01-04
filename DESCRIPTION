@@ -1,8 +1,8 @@
 Package: abcrf
 Type: Package
 Title: Approximate Bayesian Computation via Random Forests
-Version: 1.4
-Date: 2016-11-30
+Version: 1.5
+Date: 2017-01-03
 Authors@R: c(person("Jean-Michel Marin", role=c("aut", "cre"), email="jean-michel.marin@umontpellier.fr"),
              person("Louis Raynal", role="aut", email="louis.raynal@umontpellier.fr"),
              person("Pierre Pudlo",  role="aut", email="pierre.pudlo@umontpellier.fr"),
@@ -13,8 +13,8 @@ License: GPL (>= 2)
 LazyData: TRUE
 Depends: R(>= 3.1)
 Imports: readr, MASS, ranger, parallel, stringr
-NeedsCompilation: no
-Packaged: 2016-11-30 16:09:29 UTC; jean-michelmarin
+NeedsCompilation: yes
+Packaged: 2017-01-04 10:05:07 UTC; jmm
 Maintainer: Jean-Michel Marin <jean-michel.marin@umontpellier.fr>
 Repository: CRAN
 Author: Jean-Michel Marin [aut, cre],
@@ -22,4 +22,4 @@ Author: Jean-Michel Marin [aut, cre],
   Pierre Pudlo [aut],
   Christian P. Robert [ctb],
   Arnaud Estoup [ctb]
-Date/Publication: 2016-11-30 18:31:19
+Date/Publication: 2017-01-04 11:37:07

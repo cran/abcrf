@@ -1,4 +1,4 @@
-badd8b70616f99684db3a1528f783153 *DESCRIPTION
+5ec7ad2ab94d9259fbe16522006c6dca *DESCRIPTION
 33a69d68d6a96a78e637ab3e6ab6ccb9 *NAMESPACE
 fdba281d6d226f762f999b6704274d3a *R/abcrf.R
 0345cce3c333b606a45e334b06d7daf9 *R/covRegAbcrf.R
@@ -7,9 +7,9 @@ d3e7cfb2eaa4bbd447b70ee851255d55 *R/err.abcrf.R
 8950684d243469dcdfa4853de2d2f4c1 *R/err.regAbcrf.R
 f90d1bed456b80e1cc3232da37c87889 *R/plot.abcrf.R
 ea2eedb9c68aebd5cc03242c3752e530 *R/plot.regAbcrf.R
-86cc5a4a4786704095d42f10596cc7c7 *R/predict.abcrf.R
+3a2f1c421800292854d50149aa74d9bc *R/predict.abcrf.R
 fead067cba1086acf2ff6039cc1a5dad *R/predict.regAbcrf.R
-fbf1e029882583ca7c1e547daca1d4c1 *R/readRefTable.R
+4dbda26781526b084821198ba2ceb7b4 *R/readRefTable.R
 c51182180453e7bcdcd9a1b0e75f9be4 *R/regAbcrf.R
 63e424c3ccaca44aff6688d38ed38738 *R/variableImpPlot.R
 6e3d419025ad49152418f662c733ac88 *R/zzzz.R
@@ -25,7 +25,7 @@ d759ca7ddfdace400c5b9238a203985c *man/plot.abcrf.Rd
 a2125e0fccb535ba770977e84b8c2e4e *man/plot.regAbcrf.Rd
 74ab9d496d2b9287422159faabc2ffd4 *man/predict.abcrf.Rd
 abd3d623d7d1e75015181ae803360ef1 *man/predict.regAbcrf.Rd
-b7f9b646a82e82531b1aeeee00c3101d *man/readRefTable.Rd
+2d9136b28771f3b70fc851d41f08d3e9 *man/readRefTable.Rd
 25657d0b5b65eb864dc2eb4985ebe9ce *man/regAbcrf.Rd
 63cfbfba35d8041831af3d759cc7ed76 *man/snp.Rd
 e0a5444f3e2974aaa5ddf1cfe40c9c57 *man/variableImpPlot.Rd

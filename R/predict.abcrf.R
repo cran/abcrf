@@ -56,8 +56,17 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
 	colnames(vote) <- object$model.rf$forest$levels
 	
 	pred.all <- predict(object$model.rf, obs, predict.all=TRUE, num.threads=ncores.predict)$predictions
-	for(i in object$model.rf$forest$class.values ){
-	  vote[,i] <- sapply(1:nobs, function(x) mean(pred.all[x,] == i ) )
+	
+	if(nobs==1) {
+	  pred.all <- matrix(pred.all, nrow=nobs)
+	  for(i in object$model.rf$forest$class.values ){
+	    vote[,i] <- mean(pred.all[nobs,] == rep(i,ntree) )
+	  }
+	}
+	else{
+  	for(i in object$model.rf$forest$class.values ){
+	    vote[,i] <- sapply(1:nobs, function(x) mean(pred.all[x,] == rep(i,ntree) ) )
+  	}
 	}
 	
 	local.error <- as.numeric(object$model.rf$predictions == modindex)

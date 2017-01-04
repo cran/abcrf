@@ -20,7 +20,7 @@ A list with the following components:
 \item{nscen}{number of scenarios in the reference table,}
 \item{nrecscen}{number of individuals by scenario,}
 \item{nparam}{number of parameters by scenario,}
-\item{scenarios}{a vector of integers containing the scenario indices,}
+\item{scenarios}{a vector of factor containing the scenario indices,}
 \item{params}{a matrix with the parameters,}
 \item{stats}{a matrix with the summary statistics.}
 }
