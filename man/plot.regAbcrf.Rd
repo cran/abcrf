@@ -2,14 +2,15 @@
 \alias{plot.regAbcrf}
 \title{Plot of a reg-ABC-RF object}
 \description{
-\code{plot.regAbcrf} provides a variable importance plot used to construct the reg-ABC-RF object.
+\code{plot.regAbcrf} provides a variable importance plot used to construct the reg-ABC-RF object, as measured by \code{\link{ranger}} with the argument importance='impurity'.
 }
 \usage{
-\method{plot}{regAbcrf}(x, n.var=min(30, length(x$model.rf$variable.importance)), ...)
+\method{plot}{regAbcrf}(x, n.var=min(30, length(x$model.rf$variable.importance)), xlim=NULL, ...)
 }
 \arguments{
 \item{x}{a \code{\link{regAbcrf}} object.}
 \item{n.var}{number of variables in the variable importance representation. The default value is equal to the minimum between 30 and the number of summary statistics.}
+\item{xlim}{range of the abscissa for the variable importance plot.}
 \item{...}{not used.}
 }
 

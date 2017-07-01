@@ -1,10 +1,8 @@
-predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
+predictOOB.regAbcrf <- function(object, training, quantiles=c(0.025,0.975),
                              paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1, rf.weights = FALSE,...)
 {
   ### Checking arguments
-
-  if (!inherits(obs, "data.frame"))
-    stop("obs needs to be a data.frame object")
+  
   if (!inherits(training, "data.frame"))
     stop("training needs to be a data.frame object")
   if (nrow(training) == 0L || is.null(nrow(training)))
@@ -34,38 +32,24 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
   obj[["origNodes"]] <- predict(object$model.rf, training, predict.all=TRUE, num.threads=ncores)$predictions
   obj[["origObs"]] <- model.response(mf)
   
-  x <- obs
-  if(!is.null(x)){
-    if(is.vector(x)){
-      x <- matrix(x,ncol=1)
-    }
-    if (nrow(x) == 0)
-      stop("obs has 0 rows")
-    if (any(is.na(x)))
-      stop("missing values in obs")
-  }
-  
   ### prediction
   
   origObs <- obj$origObs
   origNodes <- obj$origNodes
   
-  nnew <- nrow(x)
+  nobs <- object$model.rf$num.samples
   
-  quant <- matrix(nrow=nnew,ncol=length(quantiles))
-  mediane <- matrix(nrow=nnew, ncol=1)
+  quant <- matrix(nrow=nobs,ncol=length(quantiles))
+  mediane <- matrix(nrow=nobs, ncol=1)
   
-  nodes <- predict(object$model.rf, x, predict.all=TRUE, num.threads=ncores)$predictions
-  if(is.null(dim(nodes))) nodes <- matrix(nodes, nrow=1)
   ntree <- obj$num.trees
   
-  nobs <- object$model.rf$num.samples
-
-  weights <- findweights(origNodes, inbag, nodes, as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
-
-  weights.std <- weights/ntree
+  result <- predictOob_cpp(origNodes = as.matrix(origNodes), inbag = as.matrix(inbag), nobs = as.integer(nobs), ntree = as.integer(ntree))
   
-  esper <- sapply(1:nnew, function(x) weights.std[,x]%*%origObs)
+  weights <- matrix(result, nrow= nobs)
+  weights.std <- weights
+  
+  esper <- sapply(1:nobs, function(x) weights.std[,x]%*%origObs)
   
   # Out of bag expectations
   
@@ -77,11 +61,11 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
   
   # variance estimation
   
-  variance <- sapply(1:nnew, function(x) weights.std[,x] %*% residus.oob.sq)
+  variance <- sapply(1:nobs, function(x) weights.std[,x] %*% residus.oob.sq)
   
   ## Variance obtained using cdf
   
-  variance.cdf <- sapply(1:nnew, function(x) weights.std[,x] %*% ( ( origObs - esper[x] )^2 ) ) 
+  variance.cdf <- sapply(1:nobs, function(x) weights.std[,x] %*% ( ( origObs - esper[x] )^2 ) ) 
   
   # Quantiles calculation
   
@@ -128,42 +112,48 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
   factor[indz] <- 0.5
   factor[!indz] <- (0.5-weightmin[!indz])/(weightmax[!indz]-weightmin[!indz])
   mediane[indn1,1] <- quantmin + factor* (quantmax-quantmin)
-  if(rf.weights == TRUE){
-    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, weights=weights.std)
-  } else{
-    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant)
+  
+  MSE = mean( (obj$origObs - esper)^2)
+  NMAE = mean( abs((obj$origObs - esper)/obj$origObs) )
+  
+  coverage = NULL
+  mean.q.range = NULL
+  if(length(quantiles)==2){
+    if(quantiles[1] < quantiles[2]){
+      coverage = mean( (quant[,1] <= obj$origObs) && (obj$origObs <= quant[,2]) )
+    } else{
+      coverage = mean( (quant[,2] <= obj$origObs) && (obj$origObs <= quant[,1]) )
+    }
+    mean.q.range = mean(abs((quant[,2] - quant[,1])/obj$origObs))
   }
-  class(tmp) <- "regAbcrfpredict"
+
+  if(rf.weights == TRUE){
+    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, weights=weights.std, MSE = MSE, NMAE = NMAE, coverage = coverage, mean.q.range = mean.q.range)
+  } else{
+    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, MSE = MSE, NMAE = NMAE, coverage = coverage, mean.q.range = mean.q.range)
+  }
+  class(tmp) <- "regAbcrfOOBpredict"
   tmp
 }
 
+predictOOB <-
+  function(...) UseMethod("predictOOB")
 
-print.regAbcrfpredict <-
+print.regAbcrfOOBpredict <-
   function(x, ...){
-    ret <- cbind(x$expectation, x$med, x$variance, x$variance.cdf, x$quantiles)
-    colnames(ret) <- c("expectation", "median", "variance", "variance.cdf" , colnames(x$quantiles) )
-    print(ret, ...)
+    cat("\nOut-of-bag mean squared error: ", x$MSE, "\n")
+    cat("Out-of-bag normalized mean absolute error: ", x$NMAE, "\n")
+    if(!is.null(x$coverage)) cat("Out-of-bag credible interval coverage: ", x$coverage, "\n")
+    if(!is.null(x$mean.q.range)) cat("Out-of-bag credible interval relative range: ", x$mean.q.range)
   }
 
-as.data.frame.regAbcrfpredict <-
-  function(x, ...) {
-    ret <- cbind(x$expectation, x$med, x$variance, x$variance.cdf, x$quantiles)
-    colnames(ret) <- c("expectation", "median", "variance", "variance.cdf" , colnames(x$quantiles) )
-    as.data.frame(ret,  row.names=NULL, optional=FALSE, ...)
-  }
-
-as.matrix.regAbcrfpredict <-
-  function(x, ...){
-    ret <- cbind(x$expectation, x$med, x$variance, x$variance.cdf, x$quantiles)
-    colnames(ret) <- c("expectation", "median", "variance", "variance.cdf" , colnames(x$quantiles) )
-    ret
-  }
-
-as.list.regAbcrfpredict <-
+as.list.regAbcrfOOBpredict <-
   function(x, ...){
     if(is.null(x$weights)){
-      list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles, ...)
-    } else{
-      list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles, weights=x$weights, ...)
+      list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles,
+           MSE = x$MSE, NMAE = x$NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...)
+    }else{
+      list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles,
+           weights = x$weights, MSE = x$MSE, NMAE = x$NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...) 
     }
   }

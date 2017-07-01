@@ -8,7 +8,7 @@ Given a reg-ABC-RF object and a new value of the summary statistics,
 }
 \usage{
 \method{densityPlot}{regAbcrf}(object, obs, training,
-main="Posterior density", paral=FALSE, 
+main="Posterior density", log="", paral=FALSE, 
 ncores= if(paral) max(detectCores()-1,1) else 1, ...)
 }
 \arguments{
@@ -16,9 +16,10 @@ ncores= if(paral) max(detectCores()-1,1) else 1, ...)
   \item{obs}{a data frame containing the summary statistics of the observed data sets.}
   \item{training}{the data frame containing the reference table used to train the \code{\link{regAbcrf}} object.}
   \item{main}{main title to be used for the posterior density plot.}
+  \item{log}{a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic. The default value "" implies no logarithmic transfomation.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
   \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
-  \item{\dots}{additional arguments to be passed on to \code{\link{density}}.}
+  \item{\dots}{additional arguments to be passed on to \code{\link{density}}, as for example the smoothing bandwidth \code{bw} to be used.}
 }
 \references{
 Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)

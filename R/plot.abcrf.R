@@ -1,12 +1,15 @@
-plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, ...)
+plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, xlim=NULL, ...)
 {
   
   if (!inherits(obs, "data.frame") && !is.null(obs) ) 
     stop("obs needs to be a data.frame object or NULL")
   if (!inherits(training, "data.frame"))
     stop("training needs to be a data.frame object")
+  if (!is.null(xlim) && !is.numeric(xlim))
+    stop("xlim needs to be a numeric object or NULL")
   
 	old.par <- par(no.readonly = TRUE)
+
 	if (length(x$model.rf$variable.importance)<20) n.var <- length(x$model.rf$variable.importance)
 
 	mf <- match.call(expand.dots=FALSE)
@@ -21,10 +24,10 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, ...)
  	if (x$lda) {
  	  if (pdf) { 
  	    pdf("graph_varImpPlot.pdf")
-		  variableImpPlot(x, n.var=n.var)
+		  variableImpPlot(x, n.var=n.var, xlim=xlim)
 		  dev.off()
  	  }
- 	  variableImpPlot(x, n.var=n.var)
+ 	  variableImpPlot(x, n.var=n.var, xlim=xlim)
 		nmod <- length(x$model.rf$forest$levels)
 		nstat <- x$model.rf$num.independent.variables
 		projections <- predict(x$model.lda, training)$x
@@ -36,17 +39,19 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, ...)
       if (pdf)
         {
         pdf("graph_lda.pdf")
+        par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
         plot(projections[,1:2], col=colo, pch=3)
-        legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
-               pch = 15, bty = "o", pt.cex = 2, cex = .8, horiz = TRUE, 
-               inset = c(.01, .01), title = "Models", bg = "white")
+        legend("topright", legend = as.character(x$model.rf$forest$levels), col = coloris, 
+               pch = 15, bty = "o", pt.cex = 2, cex = .8, horiz = FALSE, 
+               inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
 	  	  if  (!is.null(obs)) points(projobs[1],projobs[2],pch="*",cex=5.3)
 	  	  dev.off()
-		    }
+      }
+      par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
       plot(projections[,1:2], col=colo, pch=3)
-      legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
-             pch = 15, bty = "o", pt.cex = 2, cex = .8, horiz = TRUE, 
-             inset = c(.01, .01), title = "Models", bg = "white")
+      legend("topright", legend = as.character(x$model.rf$forest$levels), col = coloris, 
+             pch = 15, bty = "o", pt.cex = 2, cex = .8, horiz = FALSE, 
+             inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
       if  (!is.null(obs)) points(projobs[1],projobs[2],pch="*",cex=5.3)
     } else {
       l1 <- x$model.rf$forest$levels[1]
@@ -59,31 +64,33 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, ...)
       if (pdf)
         {
         pdf("graph_lda.pdf")
+        par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
         plot(d1, xlim = xrange, ylim = yrange,
              col=coloris[1], main="", xlab="")
         lines(d2, col=coloris[2])
         legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
                 cex = .8, horiz = TRUE, lty=1, bty="o",
-               inset = c(.01, .01), title = "Models", bg = "white")
+               inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
       	if  (!is.null(obs)) abline(v=projobs)
         dev.off()
       }
+      par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
       plot(d1, xlim = xrange, ylim = yrange,
            col=coloris[1], main="", xlab="")
       lines(d2, col=coloris[2])
       legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
-              cex = .8, horiz = TRUE, lty=1, bty="o",
-             inset = c(.01, .01), title = "Models", bg = "white")
+             cex = .8, horiz = TRUE, lty=1, bty="o",
+             inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
       if  (!is.null(obs)) abline(v=projobs)
     }
 	} else {
 	  if (pdf)
 	    {
 	    pdf("graph_varImpPlot.pdf")
-	    variableImpPlot(x , n.var=n.var)
+	    variableImpPlot(x , n.var=n.var, xlim=xlim)
 	    dev.off()
 	    }
-	  variableImpPlot(x , n.var=n.var)
+	  variableImpPlot(x , n.var=n.var, xlim=xlim)
 	}
 	par(old.par)
 }

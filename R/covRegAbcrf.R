@@ -15,9 +15,6 @@ function(regForest1, regForest2, obs, training1, training2, ntree=500, mtry=max(
     stop("training2 needs to be a data.frame object")
   if(any(regForest1$model.rf$forest$independent.variable.names != regForest1$model.rf$forest$independent.variable.names) )
     stop("variable names of the regAbcrf objects do not match")
-  
-  if(regForest1$formula != regForest1$formula )
-    stop("regForest1 and regForest2 formulas do not match")
 
   if(sampsize > nrow(training1) )
     stop("sampsize too large")

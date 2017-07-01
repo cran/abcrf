@@ -1,10 +1,16 @@
-variableImpPlot <- function(object, n.var=min(30, length(object$model.rf$variable.importance)))
+variableImpPlot <- function(object, n.var=min(30, length(object$model.rf$variable.importance)), xlim=NULL)
 {
   if (!inherits(object, "regAbcrf") && !inherits(object, "abcrf") )
     stop("object not of class abcrf or regAbcrf")
   imp <- object$model.rf$variable.importance
   ord <- rev(order(imp, decreasing = TRUE)[1:n.var])
-  xmin <- 0
-  dotchart(imp[ord], xlab = 'Impurity', ylab = "", main = "Variable Importance", xlim = c(xmin, max(imp)))
+  if(is.null(xlim)){
+    xmin <- 0
+    dotchart(imp[ord], xlab = 'Variable Importance', ylab = "", xlim = c(xmin, max(imp)))
+  }
+  else {
+    xmin <- 0
+    dotchart(imp[ord], xlab = 'Variable Importance', ylab = "", xlim = xlim)
+  }
   invisible(imp)
 }

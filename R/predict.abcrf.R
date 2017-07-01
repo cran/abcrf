@@ -79,7 +79,7 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
                        sample.fraction=sampsize/ntrain, num.threads = ncores, ...)
 
   options(old.options)
-	tmp <- list(allocation=allocation, vote=vote, post.prob=predict(error.rf, obs, num.threads=ncores.predict)$predictions )
+  tmp <- list(allocation=allocation, vote=vote, post.prob=predict(error.rf, obs, num.threads=ncores.predict)$predictions )
   class(tmp) <- "abcrfpredict"
   tmp
 }
@@ -90,7 +90,7 @@ summary.abcrfpredict <- function(object, ...) {
 }
 
 print.abcrfpredict <- function(x, ...) {
-ret <- cbind.data.frame(x$allocation, x$vote, x$post.prob)
+  ret <- cbind.data.frame(x$allocation, x$vote, x$post.prob)
   colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   print(ret, ...)
 }
@@ -104,7 +104,7 @@ as.matrix.abcrfpredict <- function(x, ...) {
 as.data.frame.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
   colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
-  as.data.frame(ret,  row.names=NULL, optional=FALSE, ...)
+  as.data.frame(ret, row.names=NULL, optional=FALSE, ...)
 }
 
 as.list.abcrfpredict <- function(x, ...) {

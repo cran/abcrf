@@ -15,7 +15,7 @@ ncores= if(paral) max(detectCores()-1,1) else 1)
   \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
 }
 \value{
-  \item{}{a matrix with 2 colunms: the number of trees and the out-of-bag mean squared errors. NAs might be returned if the number of trees is too low.}
+  \item{}{a matrix with 2 columns: the number of trees and the out-of-bag mean squared errors. NAs might be returned if the number of trees is too low. Errors are computed from 40 trees to the total number.}
 }
 \references{
 Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)

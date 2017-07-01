@@ -14,7 +14,7 @@ err.abcrf(object, training, paral=FALSE, ncores= if(paral) max(detectCores()-1,1
 \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
 }
 \value{
-\item{}{a matrix with 2 colunms: the number of trees and the out-of-bag errors}
+\item{}{a matrix with 2 columns: the number of trees and the out-of-bag errors. Errors are computed from 40 trees to the total number.}
 }
 \references{
 Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert, C.P. (2016)

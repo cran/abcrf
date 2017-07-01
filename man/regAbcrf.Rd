@@ -42,7 +42,8 @@ Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
 \code{\link{predict.regAbcrf}},
 \code{\link{covRegAbcrf}},
 \code{\link{ranger}},
-\code{\link{densityPlot}}
+\code{\link{densityPlot}},
+\code{\link{predictOOB}}
 }
 \examples{
 data(snp)

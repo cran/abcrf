@@ -1,5 +1,5 @@
 densityPlot.regAbcrf <- 
-function(object, obs, training,  main="Posterior density", paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1, ...)
+function(object, obs, training,  main="Posterior density", log="", paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1, ...)
 {
     ### Checking arguments
     if (!inherits(object, "regAbcrf")) 
@@ -18,7 +18,8 @@ function(object, obs, training,  main="Posterior density", paral=FALSE, ncores= 
       stop("paral should be TRUE or FALSE")
     if( ncores > detectCores() || ncores < 1 )
       stop("incorrect number of CPU cores")
-    
+    if( !is.character(log) )
+      stop("log needs to be a character string")
     x <- obs
     if(!is.null(x)){
       if(is.vector(x)){
@@ -48,7 +49,7 @@ function(object, obs, training,  main="Posterior density", paral=FALSE, ncores= 
     obj[["origObs"]] <- model.response(mf)
     
     #####################
-    
+
     origObs <- obj$origObs
     origNodes <- obj$origNodes
     
@@ -56,27 +57,12 @@ function(object, obs, training,  main="Posterior density", paral=FALSE, ncores= 
     ntree <- obj$num.trees
     nobs <- object$model.rf$num.samples
     nnew <- nrow(x)
-    
-    weightvec <- rep(0,nobs*nnew)
-    counti <- rep(0,nobs)
-    thres <- 5*.Machine$double.eps
-    result <- .C("findweightsAmelioree",
-                 as.double(as.vector(origNodes)),
-                 as.integer(as.vector(inbag)),
-                 as.double(as.vector(nodes)),
-                 weightvec=as.double(weightvec),
-                 as.integer(nobs),
-                 as.integer(nnew),
-                 as.integer(ntree),
-                 as.double(thres),
-                 as.integer(counti),
-                 PACKAGE="abcrf")
-    
-    weights <- matrix(result$weightvec, nrow= nobs)
+
+    weights <- findweights(origNodes, inbag, nodes, as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
     weights.std <- weights/ntree
-    
+
     for(i in 1:nnew){
-      plot(density(resp, weights=weights.std[,i], ...), main=main )
+      plot(density(resp, weights=weights.std[,i], ...), main=main, log=log)
       if(nnew>1 && i<nnew) readline("Press <ENTER> to Continue")
     }
 }
