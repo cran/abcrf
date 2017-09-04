@@ -5,13 +5,14 @@
 \code{err.abcrf} returns out-of-bag errors and plot them.
 }
 \usage{
-err.abcrf(object, training, paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1)
+err.abcrf(object, training, paral=FALSE,
+ncores= if(paral) max(detectCores()-1,1) else 1)
 }
 \arguments{
 \item{object}{an \code{abcrf} object.}
 \item{training}{the data frame containing the reference table used to train the \code{\link{abcrf}} object.}
 \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-\item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
+\item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
 }
 \value{
 \item{}{a matrix with 2 columns: the number of trees and the out-of-bag errors. Errors are computed from 40 trees to the total number.}

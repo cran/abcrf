@@ -23,8 +23,14 @@ function(regForest1, regForest2, obs, training1, training2, ntree=500, mtry=max(
     stop("paral should be TRUE or FALSE")
   if ( (!is.logical(paral.predict)) && (length(paral.predict) != 1L) )
     stop("paral.predict should be TRUE or FALSE")
-  if( (ncores > detectCores() || ncores < 1) || (ncores.predict > detectCores() || ncores.predict < 1) )
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
+  if(is.na(ncores.predict)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.predict.")
+    ncores.predict <- 1
+  }
   
   x <- obs
   

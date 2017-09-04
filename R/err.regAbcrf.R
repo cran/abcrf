@@ -1,11 +1,15 @@
-err.regAbcrf <- function(object, training, paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1)
+err.regAbcrf <- function(object, training, paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1, what="mean")
 {
   if (!inherits(training, "data.frame"))
     stop("training needs to be a data.frame object")
   if ( (!is.logical(paral)) && (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if(ncores > detectCores() || ncores < 1)
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
+  if(what!="mean" && what!="median")
+    stop("incorrect 'what' argument")
   
   ntrain <- nrow(training)
   ntree <- object$model.rf$num.trees
@@ -26,7 +30,11 @@ err.regAbcrf <- function(object, training, paral=FALSE, ncores= if(paral) max(de
   if (ntree < 40) stop("the number of trees in the forest should be greater than 40")
   sequo <- seq(40,object$model.rf$num.trees, length.out = 20)
   
-  res <- oobErrorsReg(as.integer(floor(sequo)), as.integer(ntrain), as.integer(ntree), as.numeric(resp), inbag, pred)
+  if(what=="mean"){
+    res <- oobErrorsReg(as.integer(floor(sequo)), as.integer(ntrain), as.integer(ntree), as.numeric(resp), inbag, pred)
+  } else if(what=="median"){
+    res <- oobMedErrorsReg(as.integer(floor(sequo)), as.integer(ntrain), as.integer(ntree), as.numeric(resp), inbag, pred)
+  }
   
   plot(floor(sequo), res, ylab="out-of-bag mean squared error",xlab="Number of trees",type="l")
   cbind(ntree=floor(sequo), oob_mse=res)

@@ -4,7 +4,7 @@
 \usage{
 variableImpPlot(object, 
 n.var=min(30, length(object$model.rf$variable.importance)),
-xlim=NULL)
+xlim=NULL, main=NULL)
 }
 \description{
 \code{variableImpPlot} provides a dotchart of variable importance as measured by \code{\link{ranger}} with the argument importance='impurity'.
@@ -13,6 +13,7 @@ xlim=NULL)
 \item{object}{an \code{abcrf} or \code{regAbcrf} object.}
 \item{n.var}{number of variables in the variable importance representation.}
 \item{xlim}{range of the abscissa.}
+\item{main}{an overall title for the variable importance plot.}
 }
 \value{
 Invisibly, the importance of the variables that were plotted.

@@ -12,8 +12,10 @@ regAbcrf.formula <- function(formula, data, ntree=500, mtry=max(floor((dim(data)
     stop("sampsize too large")
   if ( (!is.logical(paral)) && (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if(ncores > detectCores() || ncores < 1)
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
   
   mf <- match.call(expand.dots=FALSE)
   m <- match(c("formula", "data"), names(mf))

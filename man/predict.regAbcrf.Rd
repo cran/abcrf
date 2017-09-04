@@ -9,7 +9,8 @@ Based on a reg-ABC-RF object this function predicts the posterior expectation, m
 }
 \usage{
 \method{predict}{regAbcrf}(object, obs, training, quantiles=c(0.025,0.975),
-paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1, rf.weights = FALSE,...)
+paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1,
+rf.weights = FALSE,...)
 }
 \arguments{
   \item{object}{a \code{\link{regAbcrf}} object.}
@@ -17,7 +18,7 @@ paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1, rf.weights = FA
   \item{training}{the data frame containing the reference table used to train the \code{\link{regAbcrf}} object.}
   \item{quantiles}{numeric vector of probabilities with values in [0,1]. The default value is equal to \code{c(0.025, 0.975)}.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
+  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
   \item{rf.weights }{a boolean that indicates if the random forest weights used to predict quantities of interest should we returned. The default value is FALSE.}
   \item{\dots}{optional arguments to be passed on to the function \code{\link{predict.ranger}}.}
 }
@@ -34,7 +35,7 @@ An object of class \code{regAbcrfpredict}, which is a list with the following co
 \references{
 Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
 \emph{ABC random forests for Bayesian parameter inference}
-\url{http://arxiv.org/pdf/1605.05537v2.pdf}
+\url{https://arxiv.org/pdf/1605.05537.pdf}
 }
 \seealso{
 \code{\link{regAbcrf}},

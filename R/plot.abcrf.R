@@ -7,10 +7,27 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, xlim=NULL, ..
     stop("training needs to be a data.frame object")
   if (!is.null(xlim) && !is.numeric(xlim))
     stop("xlim needs to be a numeric object or NULL")
+
+  if (length(x$group)!=0)
+  {
+    ngroup <- length(x$group)
+    varn <- x$formula[[2]]
+    training[[as.character(varn)]] <- as.vector(training[[as.character(varn)]])
+    allmod <- unique(training[[as.character(varn)]])
+    for (k in 1:ngroup) for (l in 1:length(x$group[[k]])) 
+      training[[as.character(varn)]][which(training[[as.character(varn)]]==x$group[[k]][l])] <- paste("g",k,sep="")
+    if (!setequal(allmod,unlist(x$group)))
+    {
+      diffe <- setdiff(allmod,unlist(x$group))
+      for (l in 1:length(diffe)) training <- training[-which(training[[as.character(varn)]]==diffe[l]),]
+    }
+    training[[as.character(varn)]] <- as.factor(training[[as.character(varn)]])
+  }
   
 	old.par <- par(no.readonly = TRUE)
 
-	if (length(x$model.rf$variable.importance)<20) n.var <- length(x$model.rf$variable.importance)
+	if (length(x$model.rf$variable.importance)<20) 
+	  n.var <- length(x$model.rf$variable.importance)
 
 	mf <- match.call(expand.dots=FALSE)
 	mf <- mf[1]
@@ -21,7 +38,7 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, xlim=NULL, ..
 	mt <- attr(mf, "terms")
 	modindex <- model.response(mf)
 	
- 	if (x$lda) {
+	if (x$lda) {
  	  if (pdf) { 
  	    pdf("graph_varImpPlot.pdf")
 		  variableImpPlot(x, n.var=n.var, xlim=xlim)
@@ -64,23 +81,21 @@ plot.abcrf <- function(x, training, obs=NULL, n.var=20, pdf=FALSE, xlim=NULL, ..
       if (pdf)
         {
         pdf("graph_lda.pdf")
-        par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
         plot(d1, xlim = xrange, ylim = yrange,
              col=coloris[1], main="", xlab="")
         lines(d2, col=coloris[2])
         legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
-                cex = .8, horiz = TRUE, lty=1, bty="o",
-               inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
-      	if  (!is.null(obs)) abline(v=projobs)
+               cex = .8, horiz = TRUE, lty=1, bty="o",
+               inset = c(.01, .01), title = "Models", bg = "white")
+        if  (!is.null(obs)) abline(v=projobs)
         dev.off()
       }
-      par(mar=par()$mar+c(0,0,0,5), xpd=TRUE)
       plot(d1, xlim = xrange, ylim = yrange,
            col=coloris[1], main="", xlab="")
       lines(d2, col=coloris[2])
       legend("topleft", legend = as.character(x$model.rf$forest$levels), col = coloris, 
              cex = .8, horiz = TRUE, lty=1, bty="o",
-             inset = c(-.16, 0), ncol = 2, title = "Models", bg = "white")
+             inset = c(.01, .01), title = "Models", bg = "white")
       if  (!is.null(obs)) abline(v=projobs)
     }
 	} else {

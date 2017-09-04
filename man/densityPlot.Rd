@@ -18,13 +18,13 @@ ncores= if(paral) max(detectCores()-1,1) else 1, ...)
   \item{main}{main title to be used for the posterior density plot.}
   \item{log}{a character string which contains "x" if the x axis is to be logarithmic, "y" if the y axis is to be logarithmic and "xy" or "yx" if both axes are to be logarithmic. The default value "" implies no logarithmic transfomation.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
+  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
   \item{\dots}{additional arguments to be passed on to \code{\link{density}}, as for example the smoothing bandwidth \code{bw} to be used.}
 }
 \references{
 Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
 \emph{ABC random forests for Bayesian parameter inference}
-\url{http://arxiv.org/pdf/1605.05537v2.pdf}
+\url{https://arxiv.org/pdf/1605.05537.pdf}
 }
 \seealso{
 \code{\link{regAbcrf}},

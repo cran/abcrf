@@ -6,21 +6,22 @@
 }
 \usage{
 err.regAbcrf(object, training, paral=FALSE, 
-ncores= if(paral) max(detectCores()-1,1) else 1)
+ncores= if(paral) max(detectCores()-1,1) else 1, what="mean")
 }
 \arguments{
   \item{object}{a \code{regAbcrf} object.}
   \item{training}{the data frame containing the reference table used to train the \code{\link{regAbcrf}} object.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-  \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1.}
+  \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+  \item{what}{a string caracter "mean" or "median" indicating if the predictions are computed with mean or median of the response variable.}
 }
 \value{
   \item{}{a matrix with 2 columns: the number of trees and the out-of-bag mean squared errors. NAs might be returned if the number of trees is too low. Errors are computed from 40 trees to the total number.}
 }
 \references{
-Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
+Raynal, L., Marin, J. Pudlo, P., Ribatet, M. Robert, C.P. and Estoup, A. (2017)
 \emph{ABC random forests for Bayesian parameter inference}
-\url{http://arxiv.org/pdf/1605.05537v2.pdf}
+\url{https://arxiv.org/pdf/1605.05537.pdf}
 }
 \seealso{
   \code{\link{regAbcrf}},

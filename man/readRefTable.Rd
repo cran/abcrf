@@ -8,11 +8,12 @@
 }
 
 \usage{
-readRefTable(filename = "reftable.bin", header = "header.txt")
+readRefTable(filename = "reftable.bin", header = "header.txt", N = 0)
 }
 \arguments{
 \item{filename}{a .bin file from DIYABC containing the reference table.}
 \item{header}{a .txt file containing the header of the reference table in \code{filename}.}
+\item{N}{an integer indicating the number of observations to extract from the reference table. The default is 0 indicating that the whole reference table is used. Warning: if N is specified, nrecscen returns is obsolete.}
 }
 \value{
 A list with the following components:

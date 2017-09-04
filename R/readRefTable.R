@@ -1,4 +1,4 @@
-readRefTable=function(filename = "reftable.bin", header = "header.txt")
+readRefTable=function(filename = "reftable.bin", header = "header.txt", N = 0)
 {
 ##################################################################
     ## Headers parsing
@@ -79,7 +79,8 @@ readRefTable=function(filename = "reftable.bin", header = "header.txt")
     # Stream from reftable file
     to.read = file(filename,"rb")
     # number of records
-    nrec = readBin(to.read, integer(), endian = "little")
+    realnrec = readBin(to.read, integer(), endian = "little")
+    nrec = if (N > 0) { min(N,realnrec) } else { realnrec }
     # number of scenarios
     nscen = readBin(to.read, integer(), endian = "little")
     # number of records for each scenario

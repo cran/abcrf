@@ -14,12 +14,34 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
     stop("paral should be TRUE or FALSE")
   if ( (!is.logical(paral.predict)) && (length(paral.predict) != 1L) )
     stop("paral.predict should be TRUE or FALSE")
-  if( (ncores > detectCores() || ncores < 1) || (ncores.predict > detectCores() || ncores.predict < 1) )
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
+  if(is.na(ncores.predict)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.predict.")
+    ncores.predict <- 1
+  }
   
   nmod <- length(object$model.rf$forest$levels)
   ntrain <- object$model.rf$num.samples
   nstat <- object$model.rf$num.independent.variables
+ 
+  if (length(object$group)!=0)
+  {
+    ngroup <- length(object$group)
+    varn <- object$formula[[2]]
+    training[[as.character(varn)]] <- as.vector(training[[as.character(varn)]])
+    allmod <- unique(training[[as.character(varn)]])
+    for (k in 1:ngroup) for (l in 1:length(object$group[[k]])) 
+      training[[as.character(varn)]][which(training[[as.character(varn)]]==object$group[[k]][l])] <- paste("g",k,sep="")
+    if (!setequal(allmod,unlist(object$group)))
+    {
+      diffe <- setdiff(allmod,unlist(object$group))
+      for (l in 1:length(diffe)) training <- training[-which(training[[as.character(varn)]]==diffe[l]),]
+    }
+    training[[as.character(varn)]] <- as.factor(training[[as.character(varn)]])
+  }
   
   # modindex and sumsta recovery
   
@@ -43,14 +65,15 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
     stop("sampsize too large")
   
 	old.options <- options(); options(warn=-1)
+	
 	if (object$lda) {
 	  obs <- cbind(obs, predict(object$model.lda, obs)$x)
 		sumsta <- cbind( sumsta, predict(object$model.lda, training)$x )
 	}
-	
+
 	allocation <- predict(object$model.rf, obs, num.threads=ncores.predict)$predictions
 	
-	# vote :
+	# vote:
 	
 	vote <- matrix( nrow=nobs, ncol=nmod)
 	colnames(vote) <- object$model.rf$forest$levels
@@ -79,7 +102,7 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
                        sample.fraction=sampsize/ntrain, num.threads = ncores, ...)
 
   options(old.options)
-  tmp <- list(allocation=allocation, vote=vote, post.prob=predict(error.rf, obs, num.threads=ncores.predict)$predictions )
+  tmp <- list(group=object$group, allocation=allocation, vote=vote, post.prob=predict(error.rf, obs, num.threads=ncores.predict)$predictions )
   class(tmp) <- "abcrfpredict"
   tmp
 }
@@ -91,19 +114,22 @@ summary.abcrfpredict <- function(object, ...) {
 
 print.abcrfpredict <- function(x, ...) {
   ret <- cbind.data.frame(x$allocation, x$vote, x$post.prob)
-  colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   print(ret, ...)
 }
 
 as.matrix.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   ret
 }
 
 as.data.frame.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
   as.data.frame(ret, row.names=NULL, optional=FALSE, ...)
 }
 

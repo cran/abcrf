@@ -1,17 +1,21 @@
-abcrf.formula <- function(formula, data, lda=TRUE, ntree=500, sampsize=min(1e5, nrow(data)), paral=FALSE, 
+abcrf.formula <- function(formula, data, group=list(), lda=TRUE, ntree=500, sampsize=min(1e5, nrow(data)), paral=FALSE, 
                           ncores= if(paral) max(detectCores()-1,1) else 1, ...) 
 {
-  
+
   # formula and data.frame check
   
   if (!inherits(formula, "formula"))
     stop("abcrf.formula is only for formula objects")
   if (!inherits(data, "data.frame"))
     stop("data needs to be a data.frame object")
-  if(ncores > detectCores() || ncores < 1)
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
   if ( (!is.logical(paral)) && (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
+  if ( !is.list(group) )
+    stop("group needs to be a list")
   
   # modindex and sumsta recovery
   
@@ -27,7 +31,23 @@ abcrf.formula <- function(formula, data, lda=TRUE, ntree=500, sampsize=min(1e5, 
     stop("no simulation in the reference table (response, sumstat)")
   if ( (!is.logical(lda)) && (length(lda) != 1L) )
     stop("lda should be TRUE or FALSE")
-  
+
+  if(length(group)!=0)
+  {
+    ngroup <- length(group)
+    varn <- formula[[2]]
+    data[[as.character(varn)]] <- as.vector(data[[as.character(varn)]])
+    allmod <- unique(data[[as.character(varn)]])
+    for (k in 1:ngroup) for (l in 1:length(group[[k]]))
+      data[[as.character(varn)]][which(data[[as.character(varn)]]==group[[k]][l])] <- paste("g",k,sep="")
+    if (!setequal(allmod,unlist(group)))
+    {
+      diffe <- setdiff(allmod,unlist(group))
+      for (l in 1:length(diffe)) data <- data[-which(data[[as.character(varn)]]==diffe[l]),]
+    }
+    data[[as.character(varn)]] <- as.factor(data[[as.character(varn)]])
+  }
+    
   if (lda) {
     model.lda <- lda(formula, data)
     data <- cbind(data, as.matrix(predict(model.lda, data)$x ))
@@ -40,7 +60,7 @@ abcrf.formula <- function(formula, data, lda=TRUE, ntree=500, sampsize=min(1e5, 
     sampsize <- as.integer(sampsize / 10)
   if(sampsize > nrow(data))
     stop("sampsize too large")
-  
+
   model.rf <- ranger(formula, data, num.trees=ntree, sample.fraction=sampsize/nrow(data), 
                      num.threads = ncores, keep.inbag = TRUE, importance = 'impurity', ...)
   
@@ -59,8 +79,7 @@ abcrf.formula <- function(formula, data, lda=TRUE, ntree=500, sampsize=min(1e5, 
   
   cl <- match.call()
   cl[[1]] <- as.name("abcrf")
-
-  x <- list(call=cl, lda=lda, formula=formula, model.rf=model.rf, model.lda=model.lda, prior.err=model.rf$prediction.error)
+  x <- list(call=cl, lda=lda, formula=formula, group=group, model.rf=model.rf, model.lda=model.lda, prior.err=model.rf$prediction.error)
   class(x) <- "abcrf"
   x
 }
@@ -76,10 +95,10 @@ abcrf.default <- function(...) {
 abcrf <- function(...) UseMethod("abcrf")
 
 print.abcrf <- function(x, ...) {
-  cat("\nCall:\n", deparse(x$call), "\n")
+  cat("\nCall:\n",deparse(x$call, width.cutoff=500L), "\n")
   if (x$lda) cat("includes the axes of a preliminary LDA\n\n")  
   cat("Number of simulations: ", length(x$model.rf$num.samples), "\n", sep="")
   cat("Out-of-bag prior error rate: ", round(x$prior.err * 100, digits = 4), "%\n\n", sep = "")
   cat("Confusion matrix:\n")
-  print(x$model.rf$confusion, ...)  
+  print(x$model.rf$confusion, ...)
 }

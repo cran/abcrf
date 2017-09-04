@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // findweights
 NumericMatrix findweights(NumericMatrix origNodes, IntegerMatrix inbag, NumericMatrix nodes, int nobs, int nnew, int ntree);
-RcppExport SEXP abcrf_findweights(SEXP origNodesSEXP, SEXP inbagSEXP, SEXP nodesSEXP, SEXP nobsSEXP, SEXP nnewSEXP, SEXP ntreeSEXP) {
+RcppExport SEXP _abcrf_findweights(SEXP origNodesSEXP, SEXP inbagSEXP, SEXP nodesSEXP, SEXP nobsSEXP, SEXP nnewSEXP, SEXP ntreeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // oobErrors
 NumericVector oobErrors(IntegerVector sequo, int ntrain, IntegerVector mod, int ntree, IntegerVector modindex, IntegerMatrix inbag, IntegerMatrix mimi);
-RcppExport SEXP abcrf_oobErrors(SEXP sequoSEXP, SEXP ntrainSEXP, SEXP modSEXP, SEXP ntreeSEXP, SEXP modindexSEXP, SEXP inbagSEXP, SEXP mimiSEXP) {
+RcppExport SEXP _abcrf_oobErrors(SEXP sequoSEXP, SEXP ntrainSEXP, SEXP modSEXP, SEXP ntreeSEXP, SEXP modindexSEXP, SEXP inbagSEXP, SEXP mimiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +41,7 @@ END_RCPP
 }
 // oobErrorsReg
 NumericVector oobErrorsReg(IntegerVector sequo, int ntrain, int ntree, NumericVector resp, IntegerMatrix inbag, NumericMatrix pred);
-RcppExport SEXP abcrf_oobErrorsReg(SEXP sequoSEXP, SEXP ntrainSEXP, SEXP ntreeSEXP, SEXP respSEXP, SEXP inbagSEXP, SEXP predSEXP) {
+RcppExport SEXP _abcrf_oobErrorsReg(SEXP sequoSEXP, SEXP ntrainSEXP, SEXP ntreeSEXP, SEXP respSEXP, SEXP inbagSEXP, SEXP predSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,9 +55,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// oobMedErrorsReg
+NumericVector oobMedErrorsReg(IntegerVector sequo, int ntrain, int ntree, NumericVector resp, IntegerMatrix inbag, NumericMatrix pred);
+RcppExport SEXP _abcrf_oobMedErrorsReg(SEXP sequoSEXP, SEXP ntrainSEXP, SEXP ntreeSEXP, SEXP respSEXP, SEXP inbagSEXP, SEXP predSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type sequo(sequoSEXP);
+    Rcpp::traits::input_parameter< int >::type ntrain(ntrainSEXP);
+    Rcpp::traits::input_parameter< int >::type ntree(ntreeSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type resp(respSEXP);
+    Rcpp::traits::input_parameter< IntegerMatrix >::type inbag(inbagSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type pred(predSEXP);
+    rcpp_result_gen = Rcpp::wrap(oobMedErrorsReg(sequo, ntrain, ntree, resp, inbag, pred));
+    return rcpp_result_gen;
+END_RCPP
+}
 // predictOob_cpp
 NumericMatrix predictOob_cpp(NumericMatrix origNodes, NumericMatrix inbag, int nobs, int ntree);
-RcppExport SEXP abcrf_predictOob_cpp(SEXP origNodesSEXP, SEXP inbagSEXP, SEXP nobsSEXP, SEXP ntreeSEXP) {
+RcppExport SEXP _abcrf_predictOob_cpp(SEXP origNodesSEXP, SEXP inbagSEXP, SEXP nobsSEXP, SEXP ntreeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,10 +87,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"abcrf_findweights", (DL_FUNC) &abcrf_findweights, 6},
-    {"abcrf_oobErrors", (DL_FUNC) &abcrf_oobErrors, 7},
-    {"abcrf_oobErrorsReg", (DL_FUNC) &abcrf_oobErrorsReg, 6},
-    {"abcrf_predictOob_cpp", (DL_FUNC) &abcrf_predictOob_cpp, 4},
+    {"_abcrf_findweights", (DL_FUNC) &_abcrf_findweights, 6},
+    {"_abcrf_oobErrors", (DL_FUNC) &_abcrf_oobErrors, 7},
+    {"_abcrf_oobErrorsReg", (DL_FUNC) &_abcrf_oobErrorsReg, 6},
+    {"_abcrf_oobMedErrorsReg", (DL_FUNC) &_abcrf_oobMedErrorsReg, 6},
+    {"_abcrf_predictOob_cpp", (DL_FUNC) &_abcrf_predictOob_cpp, 4},
     {NULL, NULL, 0}
 };
 

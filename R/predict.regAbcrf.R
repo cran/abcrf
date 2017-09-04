@@ -13,8 +13,11 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
     stop("paral should be TRUE or FALSE")
   if ( (!is.logical(rf.weights)) && (length(rf.weights) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if( ncores > detectCores() || ncores < 1 )
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
+  
   if(min(quantiles)<0 | max(quantiles)>1 )
     stop("quantiles must be in [0,1]")
   

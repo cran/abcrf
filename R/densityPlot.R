@@ -16,8 +16,11 @@ function(object, obs, training,  main="Posterior density", log="", paral=FALSE, 
       stop("no simulation in the training reference table (response, sumstat)")
     if ( (!is.logical(paral)) && (length(paral) != 1L) )
       stop("paral should be TRUE or FALSE")
-    if( ncores > detectCores() || ncores < 1 )
-      stop("incorrect number of CPU cores")
+    if(is.na(ncores)){
+      warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+      ncores <- 1
+    }
+
     if( !is.character(log) )
       stop("log needs to be a character string")
     x <- obs

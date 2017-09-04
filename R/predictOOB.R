@@ -11,8 +11,10 @@ predictOOB.regAbcrf <- function(object, training, quantiles=c(0.025,0.975),
     stop("paral should be TRUE or FALSE")
   if ( (!is.logical(rf.weights)) && (length(rf.weights) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if( ncores > detectCores() || ncores < 1 )
-    stop("incorrect number of CPU cores")
+  if(is.na(ncores)){
+    warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
+    ncores <- 1
+  }
   if(min(quantiles)<0 | max(quantiles)>1 )
     stop("quantiles must be in [0,1]")
   
@@ -116,6 +118,9 @@ predictOOB.regAbcrf <- function(object, training, quantiles=c(0.025,0.975),
   MSE = mean( (obj$origObs - esper)^2)
   NMAE = mean( abs((obj$origObs - esper)/obj$origObs) )
   
+  med_MSE = mean( (obj$origObs - mediane)^2)
+  med_NMAE = mean( abs((obj$origObs - mediane)/obj$origObs) )
+  
   coverage = NULL
   mean.q.range = NULL
   if(length(quantiles)==2){
@@ -128,9 +133,11 @@ predictOOB.regAbcrf <- function(object, training, quantiles=c(0.025,0.975),
   }
 
   if(rf.weights == TRUE){
-    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, weights=weights.std, MSE = MSE, NMAE = NMAE, coverage = coverage, mean.q.range = mean.q.range)
+    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, weights=weights.std, 
+                MSE = MSE, NMAE = NMAE, med_MSE = med_MSE, med_NMAE = med_NMAE, coverage = coverage, mean.q.range = mean.q.range)
   } else{
-    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant, MSE = MSE, NMAE = NMAE, coverage = coverage, mean.q.range = mean.q.range)
+    tmp <- list(expectation = esper, med = mediane, variance = variance, variance.cdf = variance.cdf, quantiles = quant,
+                MSE = MSE, NMAE = NMAE, med_MSE = med_MSE, med_NMAE = med_NMAE, coverage = coverage, mean.q.range = mean.q.range)
   }
   class(tmp) <- "regAbcrfOOBpredict"
   tmp
@@ -141,8 +148,10 @@ predictOOB <-
 
 print.regAbcrfOOBpredict <-
   function(x, ...){
-    cat("\nOut-of-bag mean squared error: ", x$MSE, "\n")
-    cat("Out-of-bag normalized mean absolute error: ", x$NMAE, "\n")
+    cat("\nOut-of-bag mean squared error computed with mean: ", x$MSE, "\n")
+    cat("Out-of-bag normalized mean absolute error computed with mean: ", x$NMAE, "\n")
+    cat("\nOut-of-bag mean squared error computed with median: ", x$med_MSE, "\n")
+    cat("Out-of-bag normalized mean absolute error computed with median: ", x$med_NMAE, "\n")
     if(!is.null(x$coverage)) cat("Out-of-bag credible interval coverage: ", x$coverage, "\n")
     if(!is.null(x$mean.q.range)) cat("Out-of-bag credible interval relative range: ", x$mean.q.range)
   }
@@ -151,9 +160,9 @@ as.list.regAbcrfOOBpredict <-
   function(x, ...){
     if(is.null(x$weights)){
       list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles,
-           MSE = x$MSE, NMAE = x$NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...)
+           MSE = x$MSE, NMAE = x$NMAE, med_MSE=x$med_MSE, NMAE=x$med_NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...)
     }else{
       list(expectation = x$expectation, med = x$med , variance = x$variance, x$variance.cdf, quantiles=x$quantiles,
-           weights = x$weights, MSE = x$MSE, NMAE = x$NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...) 
+           weights = x$weights, MSE = x$MSE, NMAE = x$NMAE, med_MSE=x$med_MSE, NMAE=x$med_NMAE, coverage = x$coverage, mean.q.range = x$mean.q.range, ...) 
     }
   }
