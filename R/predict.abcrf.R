@@ -10,9 +10,9 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
     stop("no data in obs")
   if (nrow(training) == 0L || is.null(nrow(training)))
     stop("no simulation in the training reference table (response, sumstat)")
-  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+  if ( (!is.logical(paral)) || (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if ( (!is.logical(paral.predict)) && (length(paral.predict) != 1L) )
+  if ( (!is.logical(paral.predict)) || (length(paral.predict) != 1L) )
     stop("paral.predict should be TRUE or FALSE")
   if(is.na(ncores)){
     warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
@@ -83,12 +83,12 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
 	if(nobs==1) {
 	  pred.all <- matrix(pred.all, nrow=nobs)
 	  for(i in object$model.rf$forest$class.values ){
-	    vote[,i] <- mean(pred.all[nobs,] == rep(i,ntree) )
+	    vote[,i] <- sum(pred.all[nobs,] == rep(i,ntree) )
 	  }
 	}
 	else{
   	for(i in object$model.rf$forest$class.values ){
-	    vote[,i] <- sapply(1:nobs, function(x) mean(pred.all[x,] == rep(i,ntree) ) )
+	    vote[,i] <- sapply(1:nobs, function(x) sum(pred.all[x,] == rep(i,ntree) ) )
   	}
 	}
 	

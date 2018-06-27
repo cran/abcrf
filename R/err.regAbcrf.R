@@ -2,7 +2,7 @@ err.regAbcrf <- function(object, training, paral=FALSE, ncores= if(paral) max(de
 {
   if (!inherits(training, "data.frame"))
     stop("training needs to be a data.frame object")
-  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+  if ( (!is.logical(paral)) || (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
   if(is.na(ncores)){
     warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
@@ -17,7 +17,11 @@ err.regAbcrf <- function(object, training, paral=FALSE, ncores= if(paral) max(de
   mf <- match.call(expand.dots=FALSE)
   mf <- mf[1]
   mf$formula <- object$formula
+
   mf$data <- training
+  
+  training <- mf$data
+    
   mf[[1L]] <- as.name("model.frame")
   mf <- eval(mf, parent.frame() )
   mt <- attr(mf, "terms")

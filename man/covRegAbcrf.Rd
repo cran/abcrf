@@ -9,11 +9,10 @@ Using two reg-ABC-RF objects constructed on the same reference table for two dif
 }
 \usage{
 \method{covRegAbcrf}{regAbcrf}(regForest1, regForest2, obs, training1, training2,
-ntree=500, mtry=max(floor((dim(training1)[2]-1)/3), 1), 
-sampsize=min(1e5, dim(training1)[1]), paral = FALSE, ncores = 
-if(paral) max(detectCores()-1,1) else 1,
-paral.predict = FALSE, ncores.predict = 
-if(paral.predict) max(detectCores()-1,1) else 1, ... )
+ntree=500, mtry=max(floor((dim(training1)[2]-1)/3), 1),
+sampsize=min(1e5, dim(training1)[1]), paral = FALSE, 
+ncores = if(paral) max(detectCores()-1,1) else 1, paral.predict = FALSE,
+ncores.predict = if(paral.predict) max(detectCores()-1,1) else 1, ... )
 }
 \arguments{
   \item{regForest1, regForest2}{\code{\link{regAbcrf}} objects.}
@@ -32,7 +31,7 @@ if(paral.predict) max(detectCores()-1,1) else 1, ... )
 \code{covRegAbcrf} returns predicted posterior covariances between response variables of two reg-ABC-RF objects, for a new data set.
 }
 \references{
-Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
+Raynal, L., Marin, J. Pudlo, P., Ribatet, M. Robert, C.P. and Estoup, A. (2017)
 \emph{ABC random forests for Bayesian parameter inference}
 \url{https://arxiv.org/pdf/1605.05537.pdf}
 }
@@ -59,5 +58,5 @@ data3 <- data.frame(N1, sumsta)
 model.rf.N1 <- regAbcrf(N1~., data3, ntree=100)
 data(snp.obs)
 covRegAbcrf(model.rf.r, model.rf.N1, snp.obs, 
-            data2, data3 , ntree=100)
+            data2, data3, ntree=100)
 }

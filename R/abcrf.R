@@ -12,7 +12,7 @@ abcrf.formula <- function(formula, data, group=list(), lda=TRUE, ntree=500, samp
     warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
     ncores <- 1
   }
-  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+  if ( (!is.logical(paral)) || (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
   if ( !is.list(group) )
     stop("group needs to be a list")

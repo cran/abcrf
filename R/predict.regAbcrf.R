@@ -9,9 +9,9 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
     stop("training needs to be a data.frame object")
   if (nrow(training) == 0L || is.null(nrow(training)))
     stop("no simulation in the training reference table (response, sumstat)")
-  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+  if ( (!is.logical(paral)) || (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
-  if ( (!is.logical(rf.weights)) && (length(rf.weights) != 1L) )
+  if ( (!is.logical(rf.weights)) || (length(rf.weights) != 1L) )
     stop("paral should be TRUE or FALSE")
   if(is.na(ncores)){
     warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
@@ -26,7 +26,12 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
   mf <- match.call(expand.dots=FALSE)
   mf <- mf[1]
   mf$formula <- object$formula
+  
+
   mf$data <- training
+  
+  training <- mf$data
+  
   mf[[1L]] <- as.name("model.frame")
   mf <- eval(mf, parent.frame() )
   mt <- attr(mf, "terms")
@@ -47,6 +52,7 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
     if (any(is.na(x)))
       stop("missing values in obs")
   }
+
   
   ### prediction
   
@@ -64,7 +70,7 @@ predict.regAbcrf <- function(object, obs, training, quantiles=c(0.025,0.975),
   
   nobs <- object$model.rf$num.samples
 
-  weights <- findweights(origNodes, inbag, nodes, as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
+  weights <- findweights(as.matrix(origNodes), as.matrix(inbag), as.matrix(nodes), as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
 
   weights.std <- weights/ntree
   

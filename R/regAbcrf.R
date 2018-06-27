@@ -1,5 +1,5 @@
-regAbcrf.formula <- function(formula, data, ntree=500, mtry=max(floor((dim(data)[2]-1)/3), 1), sampsize=min(1e5, nrow(data)),
-                             paral=FALSE, ncores= if(paral) max(detectCores()-1,1) else 1, ...)
+regAbcrf.formula <- function(formula, data, ntree=500, mtry=max(floor((dim(data)[2]-1)/3), 1),
+                             sampsize=min(1e5, nrow(data)), paral=FALSE, ncores=if(paral) max(detectCores()-1,1) else 1, ...)
 {
   
   if (!inherits(formula, "formula"))
@@ -10,7 +10,7 @@ regAbcrf.formula <- function(formula, data, ntree=500, mtry=max(floor((dim(data)
     stop("no simulation in the reference table (resp, sumstat)")
   if(sampsize > nrow(data))
     stop("sampsize too large")
-  if ( (!is.logical(paral)) && (length(paral) != 1L) )
+  if ( (!is.logical(paral)) || (length(paral) != 1L) )
     stop("paral should be TRUE or FALSE")
   if(is.na(ncores)){
     warning("Unable to automatically detect the number of CPU cores, \n1 CPU core will be used or please specify ncores.")
@@ -56,5 +56,5 @@ function(x, ...){
   cat("Number of simulations: ", x$model.rf$num.samples, "\n", sep="")
   cat("Number of trees: ", x$model.rf$num.trees, "\n", sep="")
   cat("No. of variables tried at each split: ", x$model.rf$mtry, "\n", sep="")
-      
+
 }

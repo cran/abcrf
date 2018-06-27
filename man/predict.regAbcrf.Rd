@@ -33,7 +33,7 @@ An object of class \code{regAbcrfpredict}, which is a list with the following co
 \item{weights}{a matrix composed of the weights used to predict quantities of interest. Returned if rf.weights is TRUE.}
 }
 \references{
-Marin, J.-M., Raynal, L., Pudlo, P., Ribatet, M. and Robert, C.P. (2016)
+Raynal, L., Marin, J. Pudlo, P., Ribatet, M. Robert, C.P. and Estoup, A. (2017)
 \emph{ABC random forests for Bayesian parameter inference}
 \url{https://arxiv.org/pdf/1605.05537.pdf}
 }

@@ -7,10 +7,9 @@ Create a reg-ABC-RF object: a regression random forest from a reference table ai
 \code{regAbcrf} constructs a regression random forest from a reference table towards predicting posterior expectations, variances and quantiles of a parameter.
 }
 \usage{
-\method{regAbcrf}{formula}(formula, data, ntree=500, 
-mtry=max(floor((dim(data)[2]-1)/3), 1), 
-sampsize=min(1e5, nrow(data)),paral=FALSE, 
-ncores= if(paral) max(detectCores()-1,1) else 1, ...)
+\method{regAbcrf}{formula}(formula, data, ntree=500,
+mtry=max(floor((dim(data)[2]-1)/3), 1), sampsize=min(1e5, nrow(data)),
+paral=FALSE, ncores=if(paral) max(detectCores()-1,1) else 1, ...)
 }
 \arguments{
   \item{formula}{a formula: left of ~, variable representing
@@ -43,7 +42,7 @@ Raynal, L., Marin, J. Pudlo, P., Ribatet, M. Robert, C.P. and Estoup, A. (2017)
 \code{\link{covRegAbcrf}},
 \code{\link{ranger}},
 \code{\link{densityPlot}},
-\code{\link{predictOOB}}
+\code{\link{predictOOB}}.
 }
 \examples{
 data(snp)
