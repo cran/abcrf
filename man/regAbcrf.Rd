@@ -30,9 +30,9 @@ following components:
 \item{model.rf}{an object of class \code{ranger} containing the trained forest with the reference table.}
 }
 \references{
-Raynal, L., Marin, J. Pudlo, P., Ribatet, M. Robert, C.P. and Estoup, A. (2017)
-\emph{ABC random forests for Bayesian parameter inference}
-\url{https://arxiv.org/pdf/1605.05537.pdf}
+Raynal L., Marin J.-M. Pudlo P., Ribatet M., Robert C. P. and Estoup, A. (2019)
+\emph{ABC random forests for Bayesian parameter inference} Bioinformatics
+\url{https://doi.org/10.1093/bioinformatics/bty867}
 }
 
 \seealso{

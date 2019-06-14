@@ -6,19 +6,49 @@
 
 using namespace Rcpp;
 
-// findweights
-NumericMatrix findweights(NumericMatrix origNodes, IntegerMatrix inbag, NumericMatrix nodes, int nobs, int nnew, int ntree);
-RcppExport SEXP _abcrf_findweights(SEXP origNodesSEXP, SEXP inbagSEXP, SEXP nodesSEXP, SEXP nobsSEXP, SEXP nnewSEXP, SEXP ntreeSEXP) {
+// computeNeighboursWeights
+NumericMatrix computeNeighboursWeights(NumericMatrix predTrainingID, NumericMatrix predTestingID, int ntrain, int ntest, int ntree);
+RcppExport SEXP _abcrf_computeNeighboursWeights(SEXP predTrainingIDSEXP, SEXP predTestingIDSEXP, SEXP ntrainSEXP, SEXP ntestSEXP, SEXP ntreeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type origNodes(origNodesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type predTrainingID(predTrainingIDSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type predTestingID(predTestingIDSEXP);
+    Rcpp::traits::input_parameter< int >::type ntrain(ntrainSEXP);
+    Rcpp::traits::input_parameter< int >::type ntest(ntestSEXP);
+    Rcpp::traits::input_parameter< int >::type ntree(ntreeSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeNeighboursWeights(predTrainingID, predTestingID, ntrain, ntest, ntree));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findweights
+NumericMatrix findweights(NumericMatrix trainingNodeID, NumericMatrix testingNodeID, IntegerMatrix inbag, int ntrain, int nnew, int ntree);
+RcppExport SEXP _abcrf_findweights(SEXP trainingNodeIDSEXP, SEXP testingNodeIDSEXP, SEXP inbagSEXP, SEXP ntrainSEXP, SEXP nnewSEXP, SEXP ntreeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type trainingNodeID(trainingNodeIDSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type testingNodeID(testingNodeIDSEXP);
     Rcpp::traits::input_parameter< IntegerMatrix >::type inbag(inbagSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type nodes(nodesSEXP);
-    Rcpp::traits::input_parameter< int >::type nobs(nobsSEXP);
+    Rcpp::traits::input_parameter< int >::type ntrain(ntrainSEXP);
     Rcpp::traits::input_parameter< int >::type nnew(nnewSEXP);
     Rcpp::traits::input_parameter< int >::type ntree(ntreeSEXP);
-    rcpp_result_gen = Rcpp::wrap(findweights(origNodes, inbag, nodes, nobs, nnew, ntree));
+    rcpp_result_gen = Rcpp::wrap(findweights(trainingNodeID, testingNodeID, inbag, ntrain, nnew, ntree));
+    return rcpp_result_gen;
+END_RCPP
+}
+// findweights_train
+NumericMatrix findweights_train(NumericMatrix trainingNodeID, NumericMatrix inbag, int ntrain, int trainIdx, int ntree);
+RcppExport SEXP _abcrf_findweights_train(SEXP trainingNodeIDSEXP, SEXP inbagSEXP, SEXP ntrainSEXP, SEXP trainIdxSEXP, SEXP ntreeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type trainingNodeID(trainingNodeIDSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type inbag(inbagSEXP);
+    Rcpp::traits::input_parameter< int >::type ntrain(ntrainSEXP);
+    Rcpp::traits::input_parameter< int >::type trainIdx(trainIdxSEXP);
+    Rcpp::traits::input_parameter< int >::type ntree(ntreeSEXP);
+    rcpp_result_gen = Rcpp::wrap(findweights_train(trainingNodeID, inbag, ntrain, trainIdx, ntree));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -87,7 +117,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_abcrf_computeNeighboursWeights", (DL_FUNC) &_abcrf_computeNeighboursWeights, 5},
     {"_abcrf_findweights", (DL_FUNC) &_abcrf_findweights, 6},
+    {"_abcrf_findweights_train", (DL_FUNC) &_abcrf_findweights_train, 5},
     {"_abcrf_oobErrors", (DL_FUNC) &_abcrf_oobErrors, 7},
     {"_abcrf_oobErrorsReg", (DL_FUNC) &_abcrf_oobErrorsReg, 6},
     {"_abcrf_oobMedErrorsReg", (DL_FUNC) &_abcrf_oobMedErrorsReg, 6},

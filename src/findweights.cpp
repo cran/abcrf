@@ -2,15 +2,15 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericMatrix findweights(NumericMatrix origNodes, IntegerMatrix inbag, NumericMatrix nodes, int nobs, int nnew, int ntree){
-  NumericMatrix result(nobs,nnew);
-  IntegerVector counti(nobs);
+NumericMatrix findweights(NumericMatrix trainingNodeID, NumericMatrix testingNodeID, IntegerMatrix inbag, int ntrain, int nnew, int ntree){
+  NumericMatrix result(ntrain,nnew);
+  IntegerVector counti(ntrain);
   double meancount;
   for(int k=0; k<ntree; k++){
    for(int i=0; i<nnew; i++){
      meancount = 0;
-     for(int j=0; j<nobs; j++){
-       if( ( origNodes(j,k) == nodes(i,k) ) && (inbag(j,k) != 0) ){
+     for(int j=0; j<ntrain; j++){
+       if( ( trainingNodeID(j,k) == testingNodeID(i,k) ) && (inbag(j,k) != 0) ){
          counti[j] = inbag(j,k);
          meancount = meancount + inbag(j,k);
        } else{
@@ -18,7 +18,7 @@ NumericMatrix findweights(NumericMatrix origNodes, IntegerMatrix inbag, NumericM
        }
      }
      if( meancount >=1 ){
-       for(int j=0; j<nobs; j++){
+       for(int j=0; j<ntrain; j++){
          result(j,i) = result(j,i) + counti[j]/ meancount;
        }
      }

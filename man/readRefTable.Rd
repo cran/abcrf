@@ -26,6 +26,7 @@ A list with the following components:
 \item{stats}{a matrix with the summary statistics.}
 }
 \references{
-Cornuet, J.-M., Pudlo, P., Veyssier, J., Dehne-Garcia, A., Gautier, M., Leblois, R. Marin J.-M. and Estoup A. (2014) DIYABC v2.0: a software to make Approximate Bayesian Computation inferences about population history using \emph{Single Nucleotide Polymorphism, DNA sequence and microsatellite data} Bioinformatics
-\url{http://bioinformatics.oxfordjournals.org/content/24/23/2713}
+Cornuet J.-M., Pudlo P., Veyssier J., Dehne-Garcia A., Gautier M., Leblois R., Marin J.-M. and Estoup A. (2014)
+\emph{DIYABC v2.0: a software to make Approximate Bayesian Computation inferences about population history using Single Nucleotide Polymorphism, DNA sequence and microsatellite data} Bioinformatics
+\url{https://doi.org/10.1093/bioinformatics/btn514}
 }

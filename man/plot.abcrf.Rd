@@ -25,9 +25,9 @@ been added to the set of summary statistics
 in the call of \code{abcrf}.
 }
 \references{
-Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert, C.P. (2016)
+Pudlo P., Marin J.-M., Estoup A., Cornuet J.-M., Gautier M. and Robert, C. P. (2016)
 \emph{Reliable ABC model choice via random forests} Bioinformatics
-\url{http://bioinformatics.oxfordjournals.org/content/32/6/859}
+\url{https://doi.org/10.1093/bioinformatics/btv684}
 }
 \seealso{
 \code{\link{abcrf}},

@@ -2,7 +2,7 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
                           paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1,
                           paral.predict = FALSE, ncores.predict = if(paral.predict) max(detectCores()-1,1) else 1 , ...)
 {
-  if (!inherits(obs, "data.frame")) 
+  if (!inherits(obs, "data.frame"))
     stop("obs needs to be a data.frame object")
   if (!inherits(training, "data.frame"))
     stop("training needs to be a data.frame object")
@@ -26,7 +26,8 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
   nmod <- length(object$model.rf$forest$levels)
   ntrain <- object$model.rf$num.samples
   nstat <- object$model.rf$num.independent.variables
- 
+  diffIndex <- NULL
+  
   if (length(object$group)!=0)
   {
     ngroup <- length(object$group)
@@ -59,12 +60,12 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
 
 	if (is.null(colnames(obs))) {
 	  colnames(obs) <- object$model.rf$forest$independent.variable.names[1:(nstat-nmod-1)]
-    warning("Columns of obs have no names")
+    warning("Columns of obs have no name")
 	}
   if(sampsize > ntrain)
     stop("sampsize too large")
   
-	old.options <- options(); options(warn=-1)
+  #old.options <- options(); options(warn=-1)
 	
 	if (object$lda) {
 	  obs <- cbind(obs, predict(object$model.lda, obs)$x)
@@ -92,17 +93,18 @@ predict.abcrf <- function(object, obs, training, ntree = 1000, sampsize = min(1e
   	}
 	}
 	
-	local.error <- as.numeric(object$model.rf$predictions == modindex)
-
+	local.error <- as.numeric(object$model.rf$predictions != modindex)
 		
 	# data.frame for ranger 
-	data.ranger <- data.frame(local.error, sumsta )
+	data.ranger <- data.frame(local.error, sumsta)
 	
   error.rf <- ranger(local.error~., data=data.ranger, num.trees = ntree, 
                        sample.fraction=sampsize/ntrain, num.threads = ncores, ...)
-
-  options(old.options)
-  tmp <- list(group=object$group, allocation=allocation, vote=vote, post.prob=predict(error.rf, obs, num.threads=ncores.predict)$predictions )
+  
+  #options(old.options)
+  
+  tmp <- list(group=object$group, allocation=allocation, vote=vote, post.prob=1-predict(error.rf, obs, num.threads=ncores.predict)$predictions)
+  
   class(tmp) <- "abcrfpredict"
   tmp
 }
@@ -114,22 +116,31 @@ summary.abcrfpredict <- function(object, ...) {
 
 print.abcrfpredict <- function(x, ...) {
   ret <- cbind.data.frame(x$allocation, x$vote, x$post.prob)
-  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
-  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0){
+    colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  } else{
+    colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  }
   print(ret, ...)
 }
 
 as.matrix.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
-  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0){
+    colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  } else{
+    colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  }
   ret
 }
 
 as.data.frame.abcrfpredict <- function(x, ...) {
   ret <- cbind(x$allocation, x$vote, x$post.prob)
-  if (length(x$group)!=0) colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
-  else colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  if (length(x$group)!=0){
+    colnames(ret) <- c("selected group", paste("votes group",1:dim(x$vote)[2],sep=""), "post.proba")
+  } else {
+    colnames(ret) <- c("selected model", paste("votes model",1:dim(x$vote)[2],sep=""), "post.proba")
+  }
   as.data.frame(ret, row.names=NULL, optional=FALSE, ...)
 }
 

@@ -30,6 +30,8 @@ regAbcrf.formula <- function(formula, data, ntree=500, mtry=max(floor((dim(data)
   model.rf <- ranger(formula, data=data, num.trees=ntree, mtry=mtry, sample.fraction=sampsize/nrow(data), 
                      num.threads = ncores, keep.inbag = TRUE, importance = 'impurity', ...)
   
+  model.rf$NMAE <- mean( abs( (model.response(mf) - model.rf$predictions) / model.response(mf) ) )
+  
   cl <- match.call()
   cl[[1]] <- as.name("regAbcrf")
   x <- list(call=cl, formula=formula, model.rf = model.rf)
@@ -51,10 +53,10 @@ function(...) UseMethod("regAbcrf")
 
 print.regAbcrf <-
 function(x, ...){
-  
-  cat("\nCall:\n", deparse(x$call), "\n")
+  cat("\nCall:\n", deparse(x$call), "\n\n")
   cat("Number of simulations: ", x$model.rf$num.samples, "\n", sep="")
   cat("Number of trees: ", x$model.rf$num.trees, "\n", sep="")
-  cat("No. of variables tried at each split: ", x$model.rf$mtry, "\n", sep="")
-
+  cat("Number of variables tried at each split: ", x$model.rf$mtry, "\n", sep="")
+  cat("\nOut-of-bag prior mean squared error: ", x$model.rf$prediction.error, "\n", sep = "")
+  cat("Out-of-bag prior normalized mean absolute error: ", x$model.rf$NMAE, "\n", sep = "")
 }

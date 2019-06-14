@@ -97,7 +97,7 @@ abcrf <- function(...) UseMethod("abcrf")
 print.abcrf <- function(x, ...) {
   cat("\nCall:\n",deparse(x$call, width.cutoff=500L), "\n")
   if (x$lda) cat("includes the axes of a preliminary LDA\n\n")  
-  cat("Number of simulations: ", length(x$model.rf$num.samples), "\n", sep="")
+  cat("Number of simulations: ", x$model.rf$num.samples, "\n", sep="")
   cat("Out-of-bag prior error rate: ", round(x$prior.err * 100, digits = 4), "%\n\n", sep = "")
   cat("Confusion matrix:\n")
   print(x$model.rf$confusion, ...)

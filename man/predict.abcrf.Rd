@@ -3,10 +3,10 @@
 \title{Predict and evaluate the posterior probability of the MAP
 for new data using an ABC-RF object}
 \usage{
-\method{predict}{abcrf}(object, obs, training, ntree = 1000,
-sampsize = min(1e5,  object$model.rf$num.samples ), 
-paral = FALSE, ncores = if(paral) max(detectCores()-1,1) else 1,paral.predict = FALSE,
-ncores.predict = if(paral.predict) max(detectCores()-1,1) else 1 , ...)
+\method{predict}{abcrf}(object, obs, training, ntree = 1000, 
+sampsize = min(1e5,  object$model.rf$num.samples ), paral = FALSE,
+ncores = if(paral) max(detectCores()-1,1) else 1, paral.predict = FALSE, 
+ncores.predict = if(paral.predict) max(detectCores()-1,1) else 1, ...)
 }
 \description{
 Based on an ABC-RF object this function predicts the best model for
@@ -35,9 +35,9 @@ the regression random forest that estimates the posterior probability of the sel
   \item{post.prob}{ABC-RF approximations of the posterior probability of the selected model for each observed dataset.}
 }
 \references{
-Pudlo, P., Marin, J.-M., Estoup, A., Cornuet, J.-M., Gautier, M. and Robert C.P. (2016)
+Pudlo P., Marin J.-M., Estoup A., Cornuet J.-M., Gautier M. and Robert, C. P. (2016)
 \emph{Reliable ABC model choice via random forests} Bioinformatics
-\url{http://bioinformatics.oxfordjournals.org/content/32/6/859}
+\url{https://doi.org/10.1093/bioinformatics/btv684}
 }
 \seealso{
 \code{\link{abcrf}},
