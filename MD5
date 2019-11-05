@@ -1,9 +1,9 @@
-4d1477035a042f94314ceaaf479ab58e *DESCRIPTION
+a2d5bb6a7b0ef581a00f682928c516b9 *DESCRIPTION
 f4111db1f2d68abcfe091331c942d53f *NAMESPACE
-bb71574fb17dda68300d9e1263565885 *R/RcppExports.R
+651a24e7aa92df8ffbd833a39b6ea093 *R/RcppExports.R
 6bc3715b9f6dff519a9ae6d6f1f4bdb2 *R/abcrf.R
 a07a582c313be61c9fb81c470b4424a8 *R/covRegAbcrf.R
-27d3bd72b512b2776bfa3eac9ec5c603 *R/densityPlot.R
+c2a2036af36f6417dcac6a43b001dade *R/densityPlot.R
 ea0fed06ea55bb3c685c9b3a1a59e19e *R/err.abcrf.R
 33ba7cb22c2408eacf599ee1438ba95e *R/err.regAbcrf.R
 88c886acd13d72e0f7f96ef265678e93 *R/plot.abcrf.R

@@ -35,7 +35,7 @@ function(object, obs, training, add=TRUE, main="Posterior density", log="", xlim
         stop("obs has 0 rows")
       if (any(is.na(x))) 
         stop("missing values in obs")
-    }  
+    }
     
     # resp and sumsta recover
   
@@ -71,9 +71,9 @@ function(object, obs, training, add=TRUE, main="Posterior density", log="", xlim
     nobs <- object$model.rf$num.samples
     nnew <- nrow(x)
 
-    weights <- findweights(origNodes, inbag, nodes, as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
+    weights <- findweights(origNodes, nodes, inbag, as.integer(nobs), as.integer(nnew), as.integer(ntree)) # cpp function call
     weights.std <- weights/ntree
-
+    
     priorDensity <- density(resp)
     
     if(add){
