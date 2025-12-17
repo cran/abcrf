@@ -19,8 +19,8 @@ the response variable; right of ~, summary statistics of the reference table.}
   \item{mtry}{Number of variables to possibly split at in each node. Default is the minimum between 1 and the number of variables divided by 3.}
   \item{sampsize}{size of the sample from the reference table used to grow a tree of the regression forest, by default the minimum between the number of elements of the reference table and 100,000.}
   \item{paral}{a boolean that indicates if the calculations of the regression random forest should be parallelized.}
-  \item{ncores}{the number of CPU cores to use. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
-  \item{\dots}{additional arguments to be passed on to \code{\link{ranger}} used to construct the regression random forest that predicts the response variable.}
+  \item{ncores}{the number of CPU cores to use. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+  \item{\dots}{additional arguments to be passed on to \code{\link[ranger]{ranger}} used to construct the regression random forest that predicts the response variable.}
 }
 \value{
 An object of class \code{regAbcrf}, which is a list with the
@@ -40,7 +40,7 @@ Raynal L., Marin J.-M. Pudlo P., Ribatet M., Robert C. P. and Estoup, A. (2019)
 \code{\link{err.regAbcrf}},
 \code{\link{predict.regAbcrf}},
 \code{\link{covRegAbcrf}},
-\code{\link{ranger}},
+\code{\link[ranger]{ranger}},
 \code{\link{densityPlot}},
 \code{\link{predictOOB}}.
 }

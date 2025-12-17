@@ -7,7 +7,7 @@ n.var=min(30, length(object$model.rf$variable.importance)),
 xlim=NULL, main=NULL)
 }
 \description{
-\code{variableImpPlot} provides a dotchart of variable importance as measured by \code{\link{ranger}} with the argument importance='impurity'.
+\code{variableImpPlot} provides a dotchart of variable importance as measured by \code{\link[ranger]{ranger}} with the argument importance='impurity'.
 }
 \arguments{
 \item{object}{an \code{abcrf} or \code{regAbcrf} object.}

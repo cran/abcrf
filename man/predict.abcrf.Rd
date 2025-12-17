@@ -21,10 +21,10 @@ new data and evaluate the posterior probability of the MAP.
 of the forest, by default the minimum between the number of elements of the reference table and 100,000.}
 \item{paral}{a boolean that indicates if the calculations of the regression random forest
 (forest that returns the posterior probability of the selected model) should be parallelized.}
-\item{ncores}{the number of CPU cores to use for the regression random forest construction. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+\item{ncores}{the number of CPU cores to use for the regression random forest construction. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
 \item{paral.predict}{a boolean that indicates if random forests predictions should be parallelized.}
-\item{ncores.predict}{the number of CPU cores to use for random forest predictions (classification and regression). If paral.predict=TRUE, it is used the number of CPU cores minus 1. If ncores.predict is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
-\item{\dots}{additional arguments to be passed on to \code{\link{ranger}} used to construct
+\item{ncores.predict}{the number of CPU cores to use for random forest predictions (classification and regression). If paral.predict=TRUE, it is used the number of CPU cores minus 1. If ncores.predict is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+\item{\dots}{additional arguments to be passed on to \code{\link[ranger]{ranger}} used to construct
 the regression random forest that estimates the posterior probability of the selected model.}
 }
 \value{

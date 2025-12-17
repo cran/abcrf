@@ -24,7 +24,7 @@ ncores= if(paral) max(detectCores()-1,1) else 1, ...)
   \item{xlab}{label of the abscissa.}
   \item{ylab}{label of the ordinate.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+  \item{ncores}{the number of CPU cores to use for the regression random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
   \item{\dots}{additional arguments to be passed on to \code{\link{density}}, as for example the smoothing bandwidth \code{bw} to be used.}
 }
 \references{
@@ -37,7 +37,7 @@ Raynal L., Marin J.-M. Pudlo P., Ribatet M., Robert C. P. and Estoup, A. (2019)
 \code{\link{predict.regAbcrf}},
 \code{\link{err.regAbcrf}},
 \code{\link{covRegAbcrf}},
-\code{\link{ranger}},
+\code{\link[ranger]{ranger}},
 \code{\link{plot.regAbcrf}}
 }
 \examples{

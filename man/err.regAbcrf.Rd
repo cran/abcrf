@@ -12,7 +12,7 @@ ncores= if(paral) max(detectCores()-1,1) else 1, what="mean")
   \item{object}{a \code{regAbcrf} object.}
   \item{training}{the data frame containing the reference table used to train the \code{\link{regAbcrf}} object.}
   \item{paral}{a boolean that indicates if random forests predictions should be parallelized.}
-  \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+  \item{ncores}{the number of CPU cores to use for the random forest predictions. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
   \item{what}{a string caracter "mean" or "median" indicating if the predictions are computed with mean or median of the response variable.}
 }
 \value{
@@ -29,7 +29,7 @@ Raynal L., Marin J.-M. Pudlo P., Ribatet M., Robert C. P. and Estoup, A. (2019)
   \code{\link{plot.regAbcrf}},
   \code{\link{densityPlot}},
   \code{\link{covRegAbcrf}},
-  \code{\link{ranger}}
+  \code{\link[ranger]{ranger}}
 }
 \examples{
   data(snp)

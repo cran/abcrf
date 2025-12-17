@@ -28,8 +28,8 @@ by default no grouping is done.}
 of the classification forest, by default the minimum between the number of elements of the reference table and 100,000.}
 \item{paral}{a boolean that indicates if the calculations of the classification random forest
 (forest used to assign a model to the observed dataset) should be parallelized.}
-\item{ncores}{the number of CPU cores to use. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
-\item{\dots}{additional arguments to be passed on to \code{\link{ranger}} used to construct the classification random forest that preditcs the selected model.}
+\item{ncores}{the number of CPU cores to use. If paral=TRUE, it is used the number of CPU cores minus 1. If ncores is not specified and \code{\link[parallel]{detectCores}} does not detect the number of CPU cores with success then 1 core is used.}
+\item{\dots}{additional arguments to be passed on to \code{\link[ranger]{ranger}} used to construct the classification random forest that preditcs the selected model.}
 }
 \value{
 An object of class \code{abcrf}, which is a list with the
@@ -49,13 +49,12 @@ Pudlo P., Marin J.-M., Estoup A., Cornuet J.-M., Gautier M. and Robert, C. P. (2
 
 Estoup A., Raynal L., Verdu P. and Marin J.-M. (2018)
 \emph{Model choice using Approximate Bayesian Computation and Random Forests: analyses based on model grouping to make inferences about the genetic history of Pygmy human populations} Jounal de la Société Française de Statistique
-\url{http://journal-sfds.fr/article/view/709}
 }
 \seealso{
 \code{\link{plot.abcrf}},
 \code{\link{predict.abcrf}},
 \code{\link{err.abcrf}},
-\code{\link{ranger}}
+\code{\link[ranger]{ranger}}
 }
 \examples{
 data(snp)
